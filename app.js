@@ -1,13 +1,18 @@
-const express = require('express');
-const mongoose = require('mongoose');
+// Importar el módulo db.js donde se establece la conexión a MongoDB
+import './database/db.js';
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('¡Hola, mundo!');
-});
 
+
+// Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT || 3000;
+
+// Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor en ejecución en el puerto ${PORT}`);
+  console.log(`Servidor Express escuchando en el puerto ${PORT}`);
 });
