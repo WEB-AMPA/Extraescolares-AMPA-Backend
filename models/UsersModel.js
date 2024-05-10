@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    _id: { type: Schema.Types.ObjectId },
     username: { type: String },
     password: { type: String },
     email: { type: String },
@@ -12,6 +11,6 @@ const userSchema = new Schema({
     name: { type: String }
 });
 
-const UserModel = mongoose.model('User', userSchema);
+const UserModel = mongoose.model('users', userSchema);
 
 export default UserModel;
