@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
+import breakfastRoutes from './routes/breakfastRoutes.js';
 
 dotenv.config();
 
@@ -15,7 +16,8 @@ app.use(express.json());
 app.use('/', userRoutes);
 app.use('/', partnerRoutes);
 app.use('/', loginRoutes);
-app.use('/attendance', attendanceRoutes);
+app.use('/api', attendanceRoutes);
+app.use('/api', breakfastRoutes);
 
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT || 3000;
