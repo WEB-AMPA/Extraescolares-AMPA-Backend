@@ -1,40 +1,58 @@
-const Center = require('../models/CenterModel.js');
+import Center from '../models/CenterModel.js';
 
-async function createCenter(centerData) {
+// Función para crear un nuevo centro
+export async function createCenter(req, res) {
     try {
+        const centerData = req.body;
         const center = new Center(centerData);
         await center.save();
-        return center;
+        res.status(201).json(center);
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 }
 
-async function getCenterById(centerId) {
+// Función para obtener un centro por su ID
+export async function getCenterById(req, res) {
     try {
+        const centerId = req.params.id;
         const center = await Center.findById(centerId);
-        return center;
+        if (!center) {
+            return res.status(404).json({ message: 'Centro no encontrado' });
+        }
+        res.json(center);
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 }
 
-async function updateCenter(centerId, newData) {
+// Función para actualizar un centro por su ID
+export async function updateCenter(req, res) {
     try {
-        const center = await Center.findByIdAndUpdate(centerId, newData, { new: true });
-        return center;
+        const centerId = req.params.id;
+        const newData = req.body;
+        const updatedCenter = await Center.findByIdAndUpdate(centerId, newData, { new: true });
+        if (!updatedCenter) {
+            return res.status(404).json({ message: 'Centro no encontrado' });
+        }
+        res.json(updatedCenter);
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 }
 
-async function deleteCenter(centerId) {
+// Función para eliminar un centro por su ID
+export async function deleteCenter(req, res) {
     try {
+        const centerId = req.params.id;
         const deletedCenter = await Center.findByIdAndDelete(centerId);
-        return deletedCenter;
+        if (!deletedCenter) {
+            return res.status(404).json({ message: 'Centro no encontrado' });
+        }
+        res.json(deletedCenter);
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 }
 
-module.exports = { createCenter, getCenterById, updateCenter, deleteCenter };
+export default { createCenter, getCenterById, updateCenter, deleteCenter };

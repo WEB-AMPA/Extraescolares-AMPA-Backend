@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+import { Schema, model } from "mongoose";
 
-const centerSchema = new mongoose.Schema({
-    center: { type: String, required: true }
+const centerSchema = new Schema({
+  center: { type: String, required: true },
 });
 
-const Center = mongoose.model('Center', centerSchema);
+const Center = model("Center", centerSchema);
 
-module.exports = Center;
+export default Center;

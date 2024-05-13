@@ -1,13 +1,13 @@
-const express = require('express');
-const centerController = require('../controllers/CenterController.js');
+import { Router } from 'express';
+import { createCenter, getCenterById, updateCenter, deleteCenter } from '../controllers/CenterController.js';
 
-const router = express.Router();
+const router = Router();
 
 // Ruta para crear un nuevo centro
 router.post('/centers', async (req, res) => {
     try {
         const centerData = req.body;
-        const newCenter = await centerController.createCenter(centerData);
+        const newCenter = await createCenter(centerData);
         res.json(newCenter);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -18,7 +18,7 @@ router.post('/centers', async (req, res) => {
 router.get('/centers/:id', async (req, res) => {
     try {
         const centerId = req.params.id;
-        const center = await centerController.getCenterById(centerId);
+        const center = await getCenterById(centerId);
         res.json(center);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -30,7 +30,7 @@ router.put('/centers/:id', async (req, res) => {
     try {
         const centerId = req.params.id;
         const newData = req.body;
-        const updatedCenter = await centerController.updateCenter(centerId, newData);
+        const updatedCenter = await updateCenter(centerId, newData);
         res.json(updatedCenter);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -41,11 +41,11 @@ router.put('/centers/:id', async (req, res) => {
 router.delete('/centers/:id', async (req, res) => {
     try {
         const centerId = req.params.id;
-        const deletedCenter = await centerController.deleteCenter(centerId);
+        const deletedCenter = await deleteCenter(centerId);
         res.json(deletedCenter);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-module.exports = router;
+export default router;
