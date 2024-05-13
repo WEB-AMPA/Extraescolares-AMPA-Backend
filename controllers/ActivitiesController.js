@@ -1,7 +1,7 @@
-const Activity = require('./ActivitiesModel');
+import Activity from '../models/ActivitiesModel.js';
 
 // Función para crear una nueva actividad
-async function createActivity(activityData) {
+export async function createActivity(activityData) {
     try {
         const activity = new Activity(activityData);
         await activity.save();
@@ -12,7 +12,7 @@ async function createActivity(activityData) {
 }
 
 // Función para obtener una actividad por su ID
-async function getActivityById(activityId) {
+export async function getActivityById(activityId) {
     try {
         const activity = await Activity.findById(activityId);
         return activity;
@@ -22,7 +22,7 @@ async function getActivityById(activityId) {
 }
 
 // Función para actualizar una actividad por su ID
-async function updateActivity(activityId, newData) {
+export async function updateActivity(activityId, newData) {
     try {
         const activity = await Activity.findByIdAndUpdate(activityId, newData, { new: true });
         return activity;
@@ -32,7 +32,7 @@ async function updateActivity(activityId, newData) {
 }
 
 // Función para eliminar una actividad por su ID
-async function deleteActivity(activityId) {
+export async function deleteActivity(activityId) {
     try {
         const deletedActivity = await Activity.findByIdAndDelete(activityId);
         return deletedActivity;
@@ -40,5 +40,3 @@ async function deleteActivity(activityId) {
         throw error;
     }
 }
-
-module.exports = { createActivity, getActivityById, updateActivity, deleteActivity };
