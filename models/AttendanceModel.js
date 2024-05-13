@@ -11,6 +11,6 @@ const attendanceSchema = new Schema({
 });
 
 // Crear el modelo de asistencia
-const AttendanceModel = mongoose.model('activities_attendance', attendanceSchema);
+const AttendanceModel = mongoose.model('activities_attendances', attendanceSchema);
 
 export default AttendanceModel;
