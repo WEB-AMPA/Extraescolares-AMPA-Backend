@@ -1,7 +1,7 @@
 import Activity from '../models/ActivitiesModel.js';
 
 // Función para crear una nueva actividad
-export async function createActivity(activityData) {
+async function createActivity(activityData) {
     try {
         const activity = new Activity(activityData);
         await activity.save();
@@ -12,9 +12,9 @@ export async function createActivity(activityData) {
 }
 
 // Función para obtener una actividad por su ID
-export async function getActivityById(activityId) {
+async function getActivityById(activityId) {
     try {
-        const activity = await Activity.findById(activityId);
+        const activity = await Activity.findById(activityId).populate('category');
         return activity;
     } catch (error) {
         throw error;
@@ -22,7 +22,7 @@ export async function getActivityById(activityId) {
 }
 
 // Función para actualizar una actividad por su ID
-export async function updateActivity(activityId, newData) {
+async function updateActivity(activityId, newData) {
     try {
         const activity = await Activity.findByIdAndUpdate(activityId, newData, { new: true });
         return activity;
@@ -32,7 +32,7 @@ export async function updateActivity(activityId, newData) {
 }
 
 // Función para eliminar una actividad por su ID
-export async function deleteActivity(activityId) {
+async function deleteActivity(activityId) {
     try {
         const deletedActivity = await Activity.findByIdAndDelete(activityId);
         return deletedActivity;
@@ -40,3 +40,5 @@ export async function deleteActivity(activityId) {
         throw error;
     }
 }
+
+export { createActivity, getActivityById, updateActivity, deleteActivity };

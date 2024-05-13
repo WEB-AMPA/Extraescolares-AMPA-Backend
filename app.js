@@ -5,6 +5,11 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
+import activitiesRouter from './routes/ActivitiesRoutes.js';
+import categoryRoutes from './routes/CategoryRoutes.js';
+import centerRoutes from './routes/CenterRoutes.js'; // Agregamos esta línea
+
+
 
 dotenv.config();
 
@@ -14,6 +19,11 @@ app.use(express.json());
 app.use('/', userRoutes);
 app.use('/', partnerRoutes);
 app.use('/', loginRoutes);
+app.use('/api/activities', activitiesRouter);
+app.use('/', categoryRoutes);
+app.use('/', centerRoutes); // Agregamos esta línea
+
+
 
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT || 3000;

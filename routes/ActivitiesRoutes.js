@@ -4,9 +4,9 @@ import * as activitiesController from '../controllers/ActivitiesController.js';
 const router = express.Router();
 
 // Ruta para crear una nueva actividad
-router.post('/', async (req, res) => {
+router.post('/activities', async (req, res) => {
     try {
-        const activityData = req.body; // Datos de la nueva actividad en el cuerpo de la solicitud
+        const activityData = req.body;
         const newActivity = await activitiesController.createActivity(activityData);
         res.json(newActivity);
     } catch (error) {
@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 });
 
 // Ruta para obtener una actividad por su ID
-router.get('/:id', async (req, res) => {
+router.get('/activities/:id', async (req, res) => {
     try {
         const activityId = req.params.id;
         const activity = await activitiesController.getActivityById(activityId);
@@ -26,10 +26,10 @@ router.get('/:id', async (req, res) => {
 });
 
 // Ruta para actualizar una actividad por su ID
-router.put('/:id', async (req, res) => {
+router.put('/activities/:id', async (req, res) => {
     try {
         const activityId = req.params.id;
-        const newData = req.body; // Nuevos datos de la actividad en el cuerpo de la solicitud
+        const newData = req.body;
         const updatedActivity = await activitiesController.updateActivity(activityId, newData);
         res.json(updatedActivity);
     } catch (error) {
@@ -38,7 +38,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Ruta para eliminar una actividad por su ID
-router.delete('/:id', async (req, res) => {
+router.delete('/activities/:id', async (req, res) => {
     try {
         const activityId = req.params.id;
         const deletedActivity = await activitiesController.deleteActivity(activityId);
