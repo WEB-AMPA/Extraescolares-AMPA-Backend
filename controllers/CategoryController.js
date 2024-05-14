@@ -36,3 +36,11 @@ export async function deleteCategory(categoryId) {
         throw error;
     }
 }
+export async function getAllCategories() {
+    try {
+        const categories = await Category.find();
+        return categories;
+    } catch (error) {
+        throw error;
+    }
+}

@@ -48,4 +48,14 @@ router.delete('/activities/:id', async (req, res) => {
     }
 });
 
+// Ruta para obtener todas las actividades
+router.get('/activities', async (req, res) => {
+    try {
+        const allActivities = await activityController.getAllActivities();
+        res.json(allActivities);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 export default router;

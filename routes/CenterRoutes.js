@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { createCenter, getCenterById, updateCenter, deleteCenter } from '../controllers/CenterController.js';
+import { createCenter, getCenterById, updateCenter, deleteCenter, getAllCenters } from '../controllers/CenterController.js';
 
 const router = Router();
 
 // Ruta para crear un nuevo centro
-router.post('/centers', async (req, res) => {
+router.post('/center', async (req, res) => {
     try {
         const centerData = req.body;
         const newCenter = await createCenter(centerData);
@@ -15,7 +15,7 @@ router.post('/centers', async (req, res) => {
 });
 
 // Ruta para obtener un centro por su ID
-router.get('/centers/:id', async (req, res) => {
+router.get('/center/:id', async (req, res) => {
     try {
         const centerId = req.params.id;
         const center = await getCenterById(centerId);
@@ -26,7 +26,7 @@ router.get('/centers/:id', async (req, res) => {
 });
 
 // Ruta para actualizar un centro por su ID
-router.put('/centers/:id', async (req, res) => {
+router.put('/center/:id', async (req, res) => {
     try {
         const centerId = req.params.id;
         const newData = req.body;
@@ -38,7 +38,7 @@ router.put('/centers/:id', async (req, res) => {
 });
 
 // Ruta para eliminar un centro por su ID
-router.delete('/centers/:id', async (req, res) => {
+router.delete('/center/:id', async (req, res) => {
     try {
         const centerId = req.params.id;
         const deletedCenter = await deleteCenter(centerId);
@@ -47,5 +47,9 @@ router.delete('/centers/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+// Ruta para obtener todos los centros
+router.get('/centers', getAllCenters);
+
 
 export default router;

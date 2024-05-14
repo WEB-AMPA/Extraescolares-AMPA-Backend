@@ -6,9 +6,13 @@ export async function createCenter(req, res) {
         const centerData = req.body;
         const center = new Center(centerData);
         await center.save();
-        res.status(201).json(center);
+        if (res) {
+            res.status(201).json(center);
+        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (res) {
+            res.status(500).json({ message: error.message });
+        }
     }
 }
 
@@ -20,9 +24,13 @@ export async function getCenterById(req, res) {
         if (!center) {
             return res.status(404).json({ message: 'Centro no encontrado' });
         }
-        res.json(center);
+        if (res) {
+            res.json(center);
+        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (res) {
+            res.status(500).json({ message: error.message });
+        }
     }
 }
 
@@ -35,9 +43,13 @@ export async function updateCenter(req, res) {
         if (!updatedCenter) {
             return res.status(404).json({ message: 'Centro no encontrado' });
         }
-        res.json(updatedCenter);
+        if (res) {
+            res.json(updatedCenter);
+        }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (res) {
+            res.status(500).json({ message: error.message });
+        }
     }
 }
 
@@ -49,10 +61,22 @@ export async function deleteCenter(req, res) {
         if (!deletedCenter) {
             return res.status(404).json({ message: 'Centro no encontrado' });
         }
-        res.json(deletedCenter);
+        if (res) {
+            res.json(deletedCenter);
+        }
+    } catch (error) {
+        if (res) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+}
+// Función para obtener todos los centros
+export async function getAllCenters(req, res) {
+    try {
+        const centers = await Center.find();
+        res.json(centers);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
-
-export default { createCenter, getCenterById, updateCenter, deleteCenter };
+export default { createCenter, getCenterById, updateCenter, deleteCenter, getAllCenters };
