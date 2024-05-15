@@ -26,7 +26,11 @@ export const getAllStudents = async (req, res) => {
 // Obtener un estudiante por su ID
 export const getStudentById = async (req, res) => {
     try {
-        const student = await StudentModel.findById(req.params.id).populate('partner_id');
+        const student = await StudentModel.findById(req.params.id).populate({
+            path: 'partner_id',
+            populate: { path: 'user_id' } // Población adicional para el campo user_id dentro de partner_id
+        });
+        
         if (!student) {
             return res.status(404).json({ message: 'Estudiante no encontrado' });
         }

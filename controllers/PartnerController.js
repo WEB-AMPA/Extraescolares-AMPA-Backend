@@ -1,6 +1,6 @@
 import PartnerModel from '../models/PartnerModel.js';
 import UserModel from '../models/UsersModel.js'; 
-
+import StudentModel from '../models/StudentModels.js';
 
 // Crear un nuevo socio
 export const createPartner = async (req, res) => {
@@ -56,12 +56,17 @@ export const getPartners = async (req, res) => {
 };
 
 // Obtener un socio por su ID
+// Obtener un socio por su ID
 export const getPartnerById = async (req, res) => {
     try {
-        const partner = await PartnerModel.findById(req.params.id).populate('user_id').populate('student_id');
+        const partner = await PartnerModel.findById(req.params.id)
+            .populate('user_id')
+            .populate('student_id');
+
         if (!partner) {
             return res.status(404).json({ message: 'Socio no encontrado' });
         }
+
         res.status(200).json(partner);
     } catch (error) {
         res.status(500).json({ message: error.message });
