@@ -1,12 +1,14 @@
 import PartnerModel from '../models/PartnerModel.js';
 import UserModel from '../models/UsersModel.js'; 
 import StudentModel from '../models/StudentModels.js';
+import bcrypt from 'bcrypt';
+
 
 // Crear un nuevo socio
 export const createPartner = async (req, res) => {
     try {
         // Obtener datos del cuerpo de la solicitud
-        const { username, password, email, lastname, name, additionalField } = req.body;
+        const { username, password, email, lastname, name, additionalField, user_id, partner_number, student_id } = req.body;
 
         // Verificar si el usuario ya existe
         const existingUser = await UserModel.findOne({ username });
@@ -22,9 +24,9 @@ export const createPartner = async (req, res) => {
             username,
             password: hashedPassword,
             email,
-            role: 'partner',
             lastname,
-            name
+            name,
+            role: 'partner'
         });
 
         // Guardar el nuevo usuario en la base de datos
@@ -32,7 +34,9 @@ export const createPartner = async (req, res) => {
 
         // Crear un nuevo socio asociado al usuario
         const newPartner = new PartnerModel({
+            partner_number,
             user_id: savedUser._id,
+            student_id,
             additionalField // Campo adicional específico del socio
         });
 
@@ -44,6 +48,7 @@ export const createPartner = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 
 // Obtener todos los socios
 export const getPartners = async (req, res) => {
