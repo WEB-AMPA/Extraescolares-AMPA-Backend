@@ -8,6 +8,6 @@ const partnerSchema = new Schema({
   student_id: [{ type: Schema.Types.ObjectId, ref: 'students' }] 
 });
 
-const PartnerModel = mongoose.model('partner', partnerSchema);
+const PartnerModel = mongoose.model('partners', partnerSchema);
 
 export default PartnerModel;

@@ -1,5 +1,5 @@
 import MonitorModel from '../models/MonitorModel.js';
-import UserModel from '../models/UserModel.js'; // Importar modelo de usuarios
+import UserModel from '../models/UsersModel.js'; // Importar modelo de usuarios
 
 // Crear un nuevo monitor
 export const createMonitor = async (req, res) => {
