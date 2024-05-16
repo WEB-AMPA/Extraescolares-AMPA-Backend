@@ -1,14 +1,13 @@
 import PartnerModel from '../models/PartnerModel.js';
-import UserModel from '../models/UsersModel.js'; 
+import UserModel from '../models/UsersModel.js';
 import StudentModel from '../models/StudentModels.js';
 import bcrypt from 'bcrypt';
-
 
 // Crear un nuevo socio
 export const createPartner = async (req, res) => {
     try {
         // Obtener datos del cuerpo de la solicitud
-        const { username, password, email, lastname, name, additionalField, user_id, partner_number, student_id } = req.body;
+        const { username, password, email, lastname, name, partner_number, student_id, breakfastprice_id } = req.body;
 
         // Verificar si el usuario ya existe
         const existingUser = await UserModel.findOne({ username });
@@ -26,7 +25,7 @@ export const createPartner = async (req, res) => {
             email,
             lastname,
             name,
-            role: 'partner'
+            role: 'socio'
         });
 
         // Guardar el nuevo usuario en la base de datos
@@ -37,7 +36,7 @@ export const createPartner = async (req, res) => {
             partner_number,
             user_id: savedUser._id,
             student_id,
-            additionalField // Campo adicional específico del socio
+            breakfastprice_id
         });
 
         // Guardar el nuevo socio en la base de datos
@@ -49,11 +48,13 @@ export const createPartner = async (req, res) => {
     }
 };
 
-
 // Obtener todos los socios
 export const getPartners = async (req, res) => {
     try {
-        const partners = await PartnerModel.find().populate('user_id');
+        const partners = await PartnerModel.find()
+            .populate('user_id')
+            .populate('student_id')
+            .populate('breakfastprice_id'); // Popula el campo breakfastprice_id
         res.status(200).json(partners);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -65,7 +66,8 @@ export const getPartnerById = async (req, res) => {
     try {
         const partner = await PartnerModel.findById(req.params.id)
             .populate('user_id')
-            .populate('student_id');
+            .populate('student_id')
+            .populate('breakfastprice_id'); // Popula el campo breakfastprice_id
 
         if (!partner) {
             return res.status(404).json({ message: 'Socio no encontrado' });
@@ -80,7 +82,11 @@ export const getPartnerById = async (req, res) => {
 // Actualizar un socio por su ID
 export const updatePartnerById = async (req, res) => {
     try {
-        const updatedPartner = await PartnerModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedPartner = await PartnerModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
+            .populate('user_id')
+            .populate('student_id')
+            .populate('breakfastprice_id'); // Popula el campo breakfastprice_id
+
         if (!updatedPartner) {
             return res.status(404).json({ message: 'Socio no encontrado' });
         }
