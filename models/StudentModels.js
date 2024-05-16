@@ -5,8 +5,8 @@ const { Schema } = mongoose;
 const studentSchema = new Schema({
   name: { type: String, required: true },
   lastname: { type: String, required: true },
-  breakfast: { type: String, required: true },
   observations: { type: String },
+  activities: [{ type: Schema.Types.ObjectId, ref: 'activities' }],
   partner_id: { type: Schema.Types.ObjectId, ref: 'partners' } 
 });
 

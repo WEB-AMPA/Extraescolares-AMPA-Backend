@@ -61,7 +61,6 @@ export const getPartners = async (req, res) => {
 };
 
 // Obtener un socio por su ID
-// Obtener un socio por su ID
 export const getPartnerById = async (req, res) => {
     try {
         const partner = await PartnerModel.findById(req.params.id)
