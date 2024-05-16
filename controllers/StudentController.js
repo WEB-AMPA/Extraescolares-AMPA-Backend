@@ -20,14 +20,17 @@ export const createStudent = async (req, res) => {
     }
 };
 
-// Obtener todos los estudiantes con actividades, partner_id y user_id
+// Obtener todos los estudiantes con actividades, partner_id y user_id y breakfastprice_id
 export const getAllStudents = async (req, res) => {
     try {
         const students = await StudentModel.find().populate({
             path: 'activities'
         }).populate({
             path: 'partner_id',
-            populate: { path: 'user_id' } // Popula el campo user_id dentro de partner_id
+            populate: [
+                { path: 'user_id' },    // Popula el campo user_id dentro de partner_id
+                { path: 'breakfastprice_id' } // Popula el campo breakfastprice_id dentro de partner_id
+            ]
         });
         res.status(200).json(students);
     } catch (error) {
@@ -35,14 +38,17 @@ export const getAllStudents = async (req, res) => {
     }
 };
 
-// Obtener un estudiante por su ID con actividades, partner_id y user_id
+// Obtener un estudiante por su ID con actividades, partner_id, user_id y breakfastprice_id
 export const getStudentById = async (req, res) => {
     try {
         const student = await StudentModel.findById(req.params.id).populate({
             path: 'activities'
         }).populate({
             path: 'partner_id',
-            populate: { path: 'user_id' } // Popula el campo user_id dentro de partner_id
+            populate: [
+                { path: 'user_id' },    // Popula el campo user_id dentro de partner_id
+                { path: 'breakfastprice_id' } // Popula el campo breakfastprice_id dentro de partner_id
+            ]
         });
         
         if (!student) {
