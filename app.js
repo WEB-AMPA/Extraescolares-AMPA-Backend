@@ -6,7 +6,7 @@ import partnerRoutes from './routes/partnerRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
 import activitiesRouter from './routes/ActivitiesRoutes.js';
 import categoryRoutes from './routes/CategoryRoutes.js';
-import centerRoutes from './routes/CenterRoutes.js'
+import centerRoutes from './routes/CenterRoutes.js';
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use('/', userRoutes);
 app.use('/', partnerRoutes);
 app.use('/', loginRoutes);
-app.use('/api/activities', activitiesRouter);
+app.use('/', activitiesRouter);
 app.use('/', categoryRoutes);
 app.use('/', centerRoutes);
 
