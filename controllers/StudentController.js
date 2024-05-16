@@ -2,11 +2,18 @@ import StudentModel from '../models/StudentModels.js';
 import PartnerModel from '../models/PartnerModel.js';
 
 
-// Crear un nuevo estudiante
+// Crear un nuevo estudiante y asignar actividades
 export const createStudent = async (req, res) => {
     try {
+        // Crea un nuevo estudiante con los datos proporcionados en el cuerpo de la solicitud
         const newStudent = new StudentModel(req.body);
+
+        // Si hay actividades proporcionadas en el cuerpo de la solicitud, asigna esas actividades al estudiante
+        if (req.body.activities && req.body.activities.length > 0) {
+            newStudent.activities = req.body.activities;
+        }
         const savedStudent = await newStudent.save();
+        
         res.status(201).json(savedStudent);
     } catch (error) {
         res.status(400).json({ message: error.message });
