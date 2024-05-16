@@ -7,7 +7,7 @@ const breakfastSchema = new Schema({
   attendance: { type: Date,  required: true },
   date: { type: Date, required: true },
   fare: { type: String, required: true },
-  student_id: { type: Schema.Types.ObjectId, ref: 'student' }, // Referencia al ID del estudiante en la tabla de estudiantes
+  student_id: { type: Schema.Types.ObjectId, ref: 'students' }, // Referencia al ID del estudiante en la tabla de estudiantes
   observations: { type: String },
   payment: { type: String, required: true },
   payment_method: { type: String, required: true }

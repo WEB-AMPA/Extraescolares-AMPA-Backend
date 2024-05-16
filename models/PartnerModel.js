@@ -4,11 +4,10 @@ const { Schema } = mongoose;
 
 const partnerSchema = new Schema({
   partner_number: { type: Number, required: true },
-  name: { type: String, required: true },
-  lastname: { type: String, required: true },
-  user_id: { type: Schema.Types.ObjectId, ref: 'users' } // Referencia al ID del usuario en la tabla de usuarios
+  user_id: { type: Schema.Types.ObjectId, ref: 'users' },
+  student_id: [{ type: Schema.Types.ObjectId, ref: 'students' }] 
 });
 
-const PartnerModel = mongoose.model('partner', partnerSchema);
+const PartnerModel = mongoose.model('partners', partnerSchema);
 
 export default PartnerModel;

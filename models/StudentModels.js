@@ -7,7 +7,7 @@ const studentSchema = new Schema({
   lastname: { type: String, required: true },
   breakfast: { type: String, required: true },
   observations: { type: String },
-  partner_id: { type: Schema.Types.ObjectId, ref: 'partner' } // Referencia al ID del socio en la tabla de socios
+  partner_id: { type: Schema.Types.ObjectId, ref: 'partners' } 
 });
 
 const StudentModel = mongoose.model('students', studentSchema);

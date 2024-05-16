@@ -4,6 +4,6 @@ const centerSchema = new Schema({
   center: { type: String, required: true },
 });
 
-const Center = model("Center", centerSchema);
+const Center = model("centers", centerSchema);
 
 export default Center;

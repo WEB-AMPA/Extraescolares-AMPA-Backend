@@ -6,6 +6,6 @@ const activitySchema = new mongoose.Schema({
   center: { type: mongoose.Schema.Types.ObjectId, ref: 'Center', required: true },
 });
 
-const Activity = mongoose.model('Activity', activitySchema);
+const Activity = mongoose.model('activities', activitySchema);
 
 export default Activity;
