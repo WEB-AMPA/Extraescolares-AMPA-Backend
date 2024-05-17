@@ -9,6 +9,7 @@ import categoryRoutes from './routes/CategoryRoutes.js';
 import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
+import roleRoutes from './routes/RoleRoutes.js'
 dotenv.config();
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/activities', activitiesRouter);
 app.use('/', categoryRoutes);
 app.use('/', centerRoutes);
 app.use('/rate', rateRoutes);
+app.use('/', roleRoutes);
 
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT || 3000;
