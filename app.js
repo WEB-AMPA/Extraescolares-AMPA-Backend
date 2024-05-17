@@ -16,7 +16,7 @@ app.use('/', partnerRoutes);
 app.use('/', loginRoutes);
 
 // Puerto en el que se ejecutará el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3010;
 
 // Iniciar el servidor
 app.listen(PORT, () => {
