@@ -1,6 +1,6 @@
 // partnerRoutes.js
 import express from 'express';
-import { createPartner, getAllPartners, getPartnerById, updatePartner, deletePartner } from '../controllers/PartnerController.js';
+import { createPartner, getPartners, getPartnerById, updatePartnerById, deletePartnerById } from '../controllers/PartnerController.js';
 
 const router = express.Router();
 
@@ -8,15 +8,15 @@ const router = express.Router();
 router.post('/partners', createPartner);
 
 // Ruta para obtener todos los socios
-router.get('/partners', getAllPartners);
+router.get('/partners', getPartners);
 
 // Ruta para obtener un socio por su ID
 router.get('/partners/:id', getPartnerById);
 
 // Ruta para actualizar un socio
-router.put('/partners/:id', updatePartner);
+router.put('/partners/:id', updatePartnerById);
 
 // Ruta para eliminar un socio
-router.delete('/partners/:id', deletePartner);
+router.delete('/partners/:id', deletePartnerById);
 
 export default router;
