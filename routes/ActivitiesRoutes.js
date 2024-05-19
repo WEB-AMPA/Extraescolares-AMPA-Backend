@@ -1,11 +1,8 @@
 import express from 'express';
-import { createActivity, getAllActivities, updateActivity, deleteActivity } from '../controllers/ActivityController.js';
+import activitiesController from '../controllers/ActivitiesController.js';
 
 const router = express.Router();
 
-router.post('/activities', createActivity);
-router.get('/activities', getAllActivities);
-router.put('/activities/:id', updateActivity);
-router.delete('/activities/:id', deleteActivity);
+router.post('/', activitiesController.createActivity);
 
 export default router;
