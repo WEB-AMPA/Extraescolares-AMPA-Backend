@@ -10,6 +10,8 @@ import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
+import cors from 'cors';
+
 dotenv.config();
 
 const app = express();
