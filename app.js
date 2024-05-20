@@ -30,7 +30,7 @@ app.use('/rate', rateRoutes);
 app.use('/', roleRoutes);
 
 // Puerto en el que se ejecutará el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 // Iniciar el servidor
 app.listen(PORT, () => {
