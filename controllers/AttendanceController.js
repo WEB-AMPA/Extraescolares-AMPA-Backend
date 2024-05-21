@@ -3,14 +3,13 @@ import AttendanceModel from '../models/AttendanceModel.js';
 // Controlador para registrar la asistencia a una actividad
 export const registerAttendance = async (req, res) => {
   try {
-    const { student_id, monitor, attendance } = req.body;
+    const { date, attendance, activities_students } = req.body;
 
-    // Crear una nueva instancia de asistencia con la fecha actual
+    // Crear una nueva instancia de asistencia con los datos proporcionados
     const newAttendance = new AttendanceModel({
-      date: new Date(),
-      student_id,
-      monitor,
-      attendance
+      date,
+      attendance,
+      activities_students
     });
 
     // Guardar la asistencia en la base de datos
@@ -25,7 +24,7 @@ export const registerAttendance = async (req, res) => {
 // Controlador para obtener la asistencia de un estudiante en un rango de fechas
 export const getAttendanceByStudent = async (req, res) => {
   try {
-    const { student_id, start_date, end_date } = req.params;
+    const { activities_students, start_date, end_date } = req.params;
 
     // Convertir las fechas a objetos Date
     const startDate = new Date(start_date);
@@ -33,7 +32,7 @@ export const getAttendanceByStudent = async (req, res) => {
 
     // Consultar la asistencia del estudiante en el rango de fechas especificado
     const attendance = await AttendanceModel.find({
-      student_id,
+      activities_students,
       date: { $gte: startDate, $lte: endDate }
     });
 
@@ -42,8 +41,6 @@ export const getAttendanceByStudent = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 // Controlador para actualizar la asistencia de un estudiante en una fecha específica
 export const updateAttendance = async (req, res) => {
@@ -55,6 +52,25 @@ export const updateAttendance = async (req, res) => {
     await AttendanceModel.findByIdAndUpdate(attendance_id, { attendance });
 
     res.status(200).json({ message: 'Asistencia actualizada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+// Controlador para eliminar la asistencia
+export const deleteAttendance = async (req, res) => {
+  try {
+    const { attendance_id } = req.params;
+
+    // Buscar la asistencia por su ID y eliminarla
+    const deletedAttendance = await AttendanceModel.findByIdAndDelete(attendance_id);
+
+    if (!deletedAttendance) {
+      return res.status(404).json({ message: 'La asistencia no fue encontrada' });
+    }
+
+    res.status(200).json({ message: 'Asistencia eliminada exitosamente' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
