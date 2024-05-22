@@ -10,6 +10,8 @@ import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
+import breakfastRoutes from './routes/breakfastRoutes.js'
+
 import cors from 'cors';
 
 dotenv.config();
@@ -28,6 +30,7 @@ app.use('/', categoryRoutes);
 app.use('/', centerRoutes);
 app.use('/rate', rateRoutes);
 app.use('/', roleRoutes);
+app.use('/', breakfastRoutes)
 
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT ?? 3000;
