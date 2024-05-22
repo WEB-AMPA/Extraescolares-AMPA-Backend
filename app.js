@@ -9,12 +9,17 @@ import categoryRoutes from './routes/CategoryRoutes.js';
 import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
+import roleRoutes from './routes/RoleRoutes.js'
 import attendanceRoutes from './routes/AttendanceRoutes.js'
+import cors from 'cors';
+
 
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
+app.use(cors());
 
 app.use('/', userRoutes);
 app.use('/', partnerRoutes);
@@ -25,8 +30,10 @@ app.use('/', categoryRoutes);
 app.use('/', centerRoutes);
 app.use('/rate', rateRoutes);
 app.use('/', attendanceRoutes);
+app.use('/', roleRoutes);
+
 // Puerto en el que se ejecutará el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 // Iniciar el servidor
 app.listen(PORT, () => {
