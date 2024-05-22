@@ -3,10 +3,12 @@ import categoriesController from '../controllers/CategoriesController.js';
 
 const router = express.Router();
 
-router.post('/categories', categoriesController.createCategory);
-router.get('/categories', categoriesController.getAllCategories);
-router.get('/categories/:id', categoriesController.getCategoryById);
-router.put('/categories/:id', categoriesController.updateCategory);
-router.delete('/categories/:id', categoriesController.deleteCategory);
+router.post('/', categoriesController.createCategory);
+router.get('/', categoriesController.getAllCategories);
+router.get('/:id', categoriesController.getCategoryById);
+router.get('/name/:name', categoriesController.getCategoryByName);
+router.put('/:id', categoriesController.updateCategory);
+router.delete('/:id', categoriesController.deleteCategory);
 
 export default router;
+

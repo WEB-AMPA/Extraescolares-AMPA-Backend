@@ -4,7 +4,6 @@ class CategoriesController {
     async createCategory(req, res) {
         try {
             const { name } = req.body;
-
             const newCategory = new Category({ name });
             const savedCategory = await newCategory.save();
             res.status(201).json(savedCategory);
@@ -37,14 +36,23 @@ class CategoriesController {
         }
     }
 
+    async getCategoryByName(req, res) {
+        try {
+            const category = await Category.findOne({ name: req.params.name });
+            if (!category) {
+                return res.status(404).json({ message: 'Categoría no encontrada.' });
+            }
+            res.status(200).json(category);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Hubo un error al obtener la categoría.' });
+        }
+    }
+
     async updateCategory(req, res) {
         try {
             const { name } = req.body;
-            const updatedCategory = await Category.findByIdAndUpdate(
-                req.params.id,
-                { name },
-                { new: true }
-            );
+            const updatedCategory = await Category.findByIdAndUpdate(req.params.id, { name }, { new: true });
             if (!updatedCategory) {
                 return res.status(404).json({ message: 'Categoría no encontrada.' });
             }

@@ -1,67 +1,97 @@
+/// controllers/StudentsController.js
 import StudentModel from '../models/StudentModels.js';
-import PartnerModel from '../models/PartnerModel.js';
+import Center from '../models/CentersModel.js';
 
-
-// Crear un nuevo estudiante
-export const createStudent = async (req, res) => {
+class StudentsController {
+  async createStudent(req, res) {
     try {
-        const newStudent = new StudentModel(req.body);
-        const savedStudent = await newStudent.save();
-        res.status(201).json(savedStudent);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
+      const { name, lastname, breakfast, observations, course, partner_id, centerName } = req.body;
 
-// Obtener todos los estudiantes
-export const getAllStudents = async (req, res) => {
-    try {
-        const students = await StudentModel.find();
-        res.status(200).json(students);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+      // Buscar el centro por su nombre
+      const center = await Center.findOne({ name: centerName });
+      if (!center) {
+        return res.status(400).json({ message: 'El centro proporcionado no existe.' });
+      }
 
-// Obtener un estudiante por su ID
-export const getStudentById = async (req, res) => {
-    try {
-        const student = await StudentModel.findById(req.params.id).populate({
-            path: 'partner_id',
-            populate: { path: 'user_id' } // Población adicional para el campo user_id dentro de partner_id
-        });
-        
-        if (!student) {
-            return res.status(404).json({ message: 'Estudiante no encontrado' });
-        }
-        res.status(200).json(student);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+      const newStudent = new StudentModel({
+        name,
+        lastname,
+        breakfast,
+        observations,
+        course,
+        partner_id,
+        center: center._id // Asignar el ObjectId del centro
+      });
 
-// Actualizar un estudiante por su ID
-export const updateStudentById = async (req, res) => {
-    try {
-        const updatedStudent = await StudentModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedStudent) {
-            return res.status(404).json({ message: 'Estudiante no encontrado' });
-        }
-        res.status(200).json(updatedStudent);
+      const savedStudent = await newStudent.save();
+      res.status(201).json(savedStudent);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al crear el estudiante.', error: error.message });
     }
-};
+  }
 
-// Eliminar un estudiante por su ID
-export const deleteStudentById = async (req, res) => {
+  async getAllStudents(req, res) {
     try {
-        const deletedStudent = await StudentModel.findByIdAndDelete(req.params.id);
-        if (!deletedStudent) {
-            return res.status(404).json({ message: 'Estudiante no encontrado' });
-        }
-        res.status(200).json({ message: 'Estudiante eliminado correctamente' });
+      const students = await StudentModel.find().populate('center');
+      res.status(200).json(students);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al obtener los estudiantes.', error: error.message });
     }
-};
+  }
+
+  async getStudentById(req, res) {
+    try {
+      const student = await StudentModel.findById(req.params.id).populate('center');
+      if (!student) {
+        return res.status(404).json({ message: 'Estudiante no encontrado.' });
+      }
+      res.status(200).json(student);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al obtener el estudiante.', error: error.message });
+    }
+  }
+
+  async updateStudent(req, res) {
+    try {
+      const { name, lastname, breakfast, observations, course, partner_id, centerName } = req.body;
+
+      // Buscar el centro por su nombre
+      const center = await Center.findOne({ name: centerName });
+      if (!center) {
+        return res.status(400).json({ message: 'El centro proporcionado no existe.' });
+      }
+
+      const updatedStudent = await StudentModel.findByIdAndUpdate(
+        req.params.id,
+        { name, lastname, breakfast, observations, course, partner_id, center: center._id },
+        { new: true }
+      );
+
+      if (!updatedStudent) {
+        return res.status(404).json({ message: 'Estudiante no encontrado.' });
+      }
+      res.status(200).json(updatedStudent);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al actualizar el estudiante.', error: error.message });
+    }
+  }
+
+  async deleteStudent(req, res) {
+    try {
+      const deletedStudent = await StudentModel.findByIdAndDelete(req.params.id);
+      if (!deletedStudent) {
+        return res.status(404).json({ message: 'Estudiante no encontrado.' });
+      }
+      res.status(200).json({ message: 'Estudiante eliminado exitosamente.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al eliminar el estudiante.', error: error.message });
+    }
+  }
+}
+
+export default new StudentsController();

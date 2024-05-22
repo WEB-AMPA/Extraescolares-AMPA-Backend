@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/UserRoutes.js";
 import partnerRoutes from "./routes/PartnerRoutes.js";
 import loginRoutes from "./routes/LoginRoutes.js";
-import categoriesRoutes from "./routes/CategoriesRoutes.js"; // Asegúrate de que esta línea está presente
+import categoriesRoutes from "./routes/CategoriesRoutes.js";
 import centerRoutes from "./routes/CenterRoutes.js";
 import studentsRoutes from "./routes/StudentsRoutes.js";
 import activitiesRouter from "./routes/ActivitiesRoutes.js";
@@ -27,9 +27,9 @@ mongoose.model("schedule_hours", ScheduleHoursModel.schema);
 app.use("/", userRoutes);
 app.use("/", partnerRoutes);
 app.use("/", loginRoutes);
-app.use("/", studentsRoutes);
-app.use("/api/categories", categoriesRoutes);  // Asegúrate de que esta línea está presente
-app.use('/api', centerRoutes);
+app.use("/api/students", studentsRoutes); 
+app.use("/api/categories", categoriesRoutes);
+app.use("/api", centerRoutes);
 app.use("/api/activities", activitiesRouter);
 app.use("/api/scheduleDays", scheduleDaysRouter);
 app.use("/api/scheduleHours", scheduleHoursRouter);
