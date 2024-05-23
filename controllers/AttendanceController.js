@@ -3,13 +3,13 @@ import AttendanceModel from '../models/AttendanceModel.js';
 // Controlador para registrar la asistencia a una actividad
 export const registerAttendance = async (req, res) => {
   try {
-    const { date, attendance, activities_student } = req.body;
+    const { date, attendance, activities_students } = req.body;
 
     // Crear una nueva instancia de asistencia
     const newAttendance = new AttendanceModel({
       date: date ? new Date(date) : new Date(), // Usa la fecha proporcionada o la fecha actual
       attendance,
-      activities_student
+      activities_students
     });
 
     // Guardar la asistencia en la base de datos
@@ -33,16 +33,16 @@ export const getAttendanceByStudent = async (req, res) => {
 
     // Consultar la asistencia del estudiante en el rango de fechas especificado
     const attendance = await AttendanceModel.find({
-      activities_student: student,
+      activities_students: student,
       date: { $gte: startDate, $lte: endDate } 
     }).populate({
-      path: 'activities_student',
+      path: 'activities_students',
       populate: {
         path: 'student', 
         model: 'students' 
       }
     }).populate({
-      path: 'activities_student',
+      path: 'activities_students',
       populate: {
         path: 'activity', // 
         model: 'activities' 
@@ -59,8 +59,15 @@ export const getAttendanceByStudent = async (req, res) => {
 // Controlador para obtener todas las asistencias
 export const getAllAttendances = async (req, res) => {
   try {
-    // Consultar todas las asistencias
-    const allAttendances = await AttendanceModel.find();
+    // Consultar todas las asistencias y poblar el campo activities_student
+    const allAttendances = await AttendanceModel.find()
+      .populate({
+        path: 'activities_students',
+        populate: [
+          { path: 'student', model: 'students' },
+          { path: 'activity', model: 'activities' }
+        ]
+      });
 
     res.status(200).json(allAttendances);
   } catch (error) {

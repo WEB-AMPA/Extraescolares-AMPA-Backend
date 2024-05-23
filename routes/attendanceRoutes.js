@@ -7,8 +7,9 @@ const router = express.Router();
 router.post('/register', registerAttendance);
 
 // Ruta para obtener la asistencia de un estudiante en un rango de fechas
-router.get('/student/:student_id/from/:start_date/to/:end_date', getAttendanceByStudent);
+router.get('/:student_id/from/:start_date/:end_date', getAttendanceByStudent);
 
+students/:startDate/:endDate
 
 // Ruta para obtener todas las asistencias
 router.get('/attendance', getAllAttendances);
