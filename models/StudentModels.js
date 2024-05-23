@@ -9,7 +9,7 @@ const studentSchema = new Schema({
   observations: { type: String },
   course: { type: String, required: true },
   partner_id: { type: Number, required: true },
-  center: { type: Schema.Types.ObjectId, ref: 'centers', required: true },
+  center: { type: Schema.Types.ObjectId, ref: 'centers', required: true }, // Campo para el centro
   activities: [{
     activity: { type: Schema.Types.ObjectId, ref: 'activities' },
     category: { type: Schema.Types.ObjectId, ref: 'categories' },

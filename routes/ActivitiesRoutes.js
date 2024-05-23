@@ -6,8 +6,9 @@ const router = express.Router();
 router.post('/', activitiesController.createActivity);
 router.get('/', activitiesController.getAllActivities);
 router.get('/:id', activitiesController.getActivityById);
-router.put('/:id', activitiesController.updateActivityDetails);
+router.put('/:id', activitiesController.updateActivity);
 router.delete('/:id', activitiesController.deleteActivity);
-router.post('/assign', activitiesController.assignActivityToStudent); 
+router.post('/assign', activitiesController.assignActivityToStudent);
 
 export default router;
+
