@@ -3,14 +3,13 @@ import AttendanceModel from '../models/AttendanceModel.js';
 // Controlador para registrar la asistencia a una actividad
 export const registerAttendance = async (req, res) => {
   try {
-    const { student_id, monitor, attendance } = req.body;
+    const { date, attendance, activities_student } = req.body;
 
-    // Crear una nueva instancia de asistencia con la fecha actual
+    // Crear una nueva instancia de asistencia
     const newAttendance = new AttendanceModel({
-      date: new Date(),
-      student_id,
-      monitor,
-      attendance
+      date: date ? new Date(date) : new Date(), // Usa la fecha proporcionada o la fecha actual
+      attendance,
+      activities_student
     });
 
     // Guardar la asistencia en la base de datos
@@ -22,10 +21,11 @@ export const registerAttendance = async (req, res) => {
   }
 };
 
+
 // Controlador para obtener la asistencia de un estudiante en un rango de fechas
 export const getAttendanceByStudent = async (req, res) => {
   try {
-    const { student_id, start_date, end_date } = req.params;
+    const { student, start_date, end_date } = req.params;
 
     // Convertir las fechas a objetos Date
     const startDate = new Date(start_date);
@@ -33,8 +33,20 @@ export const getAttendanceByStudent = async (req, res) => {
 
     // Consultar la asistencia del estudiante en el rango de fechas especificado
     const attendance = await AttendanceModel.find({
-      student_id,
-      date: { $gte: startDate, $lte: endDate }
+      activities_student: student,
+      date: { $gte: startDate, $lte: endDate } 
+    }).populate({
+      path: 'activities_student',
+      populate: {
+        path: 'student', 
+        model: 'students' 
+      }
+    }).populate({
+      path: 'activities_student',
+      populate: {
+        path: 'activity', // 
+        model: 'activities' 
+      }
     });
 
     res.status(200).json(attendance);
