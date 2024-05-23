@@ -21,7 +21,7 @@ export const getAllBreakfastAttendances = async (req, res) => {
     try {
         const breakfasts = await BreakfastModel.find().populate({
             path: 'student_id',
-            select: 'name lastname'
+            select: 'name lastname observations'
         });
         res.status(200).json(breakfasts);
     } catch (error) {
@@ -46,7 +46,7 @@ export const getBreakfastAttendancesByStudentAndDate = async (req, res) => {
             }
         }).populate({
             path: 'student_id',
-            select: 'name lastname'
+            select: 'name lastname observations'
         });
 
         res.status(200).json(breakfasts);
@@ -60,7 +60,7 @@ export const getBreakfastAttendanceById = async (req, res) => {
     try {
         const breakfast = await BreakfastModel.findById(req.params.id).populate({
             path: 'student_id',
-            select: 'name lastname'
+            select: 'name lastname observations'
         });
         if (!breakfast) {
             return res.status(404).json({ message: 'Asistencia de desayuno no encontrada' });
@@ -82,7 +82,7 @@ export const updateBreakfastAttendanceById = async (req, res) => {
 
         const updatedBreakfast = await BreakfastModel.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate({
             path: 'student_id',
-            select: 'name lastname'
+            select: 'name lastname observations'
         });
         if (!updatedBreakfast) {
             return res.status(404).json({ message: 'Asistencia de desayuno no encontrada' });
