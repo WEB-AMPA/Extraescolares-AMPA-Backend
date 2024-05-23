@@ -56,6 +56,20 @@ export const getAttendanceByStudent = async (req, res) => {
 };
 
 
+// Controlador para obtener todas las asistencias
+export const getAllAttendances = async (req, res) => {
+  try {
+    // Consultar todas las asistencias
+    const allAttendances = await AttendanceModel.find();
+
+    res.status(200).json(allAttendances);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 
 // Controlador para actualizar la asistencia de un estudiante en una fecha específica
 export const updateAttendance = async (req, res) => {
