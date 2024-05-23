@@ -33,10 +33,18 @@ export const loginUser = async (req, res) => {
     }
 
     // Generar un token de autenticación
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 3600000 // en una hora la cookie se eliminará
+    });
 
+
+    
     // Devolver el token como respuesta
-    res.status(200).json({ token });
+    res.status(200).json({ token, role: user.role });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

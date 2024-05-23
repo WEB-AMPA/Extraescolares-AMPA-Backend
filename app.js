@@ -20,7 +20,9 @@ import mongoose from "mongoose";
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
+app.use(cors());
 
 // Registrar el modelo ScheduleDaysModel y ScheduleHoursModel
 mongoose.model("schedule_days", ScheduleDaysModel.schema);
@@ -39,7 +41,7 @@ app.use("/api/activitiesStudents", activitiesStudentsRouter);
 
 
 // Puerto en el que se ejecutará el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 // Iniciar el servidor
 app.listen(PORT, () => {

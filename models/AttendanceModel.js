@@ -7,7 +7,7 @@ const attendanceSchema = new Schema({
   date: { type: Date, required: true },
   student_id: { type: Schema.Types.ObjectId, ref: 'students', required: true }, // Referencia al ID del estudiante en la tabla de estudiantes
   monitor: { type: String, required: true },
-  attendance: { type: String, required: true }
+  attendance: { type: Boolean, required: true }
 });
 
 // Crear el modelo de asistencia
