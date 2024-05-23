@@ -12,6 +12,8 @@ import ScheduleDaysModel from "./models/ScheduleDaysModel.js";
 import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
 import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
 import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js";
+import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
+
 
 import mongoose from "mongoose";
 
@@ -33,6 +35,8 @@ app.use("/api", centerRoutes);
 app.use("/api/activities", activitiesRouter);
 app.use("/api/scheduleDays", scheduleDaysRouter);
 app.use("/api/scheduleHours", scheduleHoursRouter);
+app.use("/api/activitiesStudents", activitiesStudentsRouter);
+
 
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT || 3000;
