@@ -72,7 +72,7 @@ export const getAllAttendances = async (req, res) => {
 
 
 
-// Controlador para actualizar la asistencia de un estudiante en una fecha específica
+// Controlador para actualizar la asistencia de un estudiante 
 export const updateAttendance = async (req, res) => {
   try {
     const { attendance_id } = req.params;
@@ -86,3 +86,24 @@ export const updateAttendance = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+// Controlador para eliminar una asistencia por su ID
+export const deleteAttendance = async (req, res) => {
+  try {
+    const { attendance_id } = req.params;
+
+    // Buscar y eliminar la asistencia por su ID
+    const deletedAttendance = await AttendanceModel.findByIdAndDelete(attendance_id);
+
+    if (!deletedAttendance) {
+      return res.status(404).json({ message: 'Asistencia no encontrada' });
+    }
+
+    res.status(200).json({ message: 'Asistencia eliminada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
