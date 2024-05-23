@@ -1,77 +1,249 @@
-import Activity from '../models/ActivitiesModel.js';
+import ActivitiesModel from "../models/ActivitiesModel.js";
+import Center from "../models/CentersModel.js";
+import Category from "../models/CategoriesModel.js";
+import ScheduleDay from "../models/ScheduleDaysModel.js";
+import ScheduleHour from "../models/ScheduleHoursModel.js";
+import StudentModel from "../models/StudentModels.js";
+import ActivitiesStudentsModel from "../models/ActivitiesStudentsModel.js";
 
-// Función para crear una nueva actividad
-async function createActivityWithDetails(activityData) {
+class ActivitiesController {
+  // Crear una nueva actividad
+  async createActivity(req, res) {
     try {
-        const activity = new Activity(activityData);
-        const savedActivity = await activity.save();
-        return savedActivity;
+      const { name, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+
+      const centerIds = await Promise.all(centerNames.map(async (name) => {
+        const center = await Center.findOne({ name });
+        if (!center) {
+          throw new Error(`El centro proporcionado (${name}) no existe.`);
+        }
+        return center._id;
+      }));
+
+      const categoryIds = await Promise.all(categoryNames.map(async (name) => {
+        const category = await Category.findOne({ name });
+        if (!category) {
+          throw new Error(`La categoría proporcionada (${name}) no existe.`);
+        }
+        return category._id;
+      }));
+
+      const scheduleDayIds = await Promise.all(scheduleDays.map(async (day) => {
+        const foundDay = await ScheduleDay.findOne({ days: day });
+        if (!foundDay) {
+          throw new Error(`El día proporcionado (${day}) no existe.`);
+        }
+        return foundDay._id;
+      }));
+
+      const scheduleHourIds = await Promise.all(scheduleHours.map(async (hour) => {
+        const foundHour = await ScheduleHour.findOne({ range: hour });
+        if (!foundHour) {
+          throw new Error(`La hora proporcionada (${hour}) no existe.`);
+        }
+        return foundHour._id;
+      }));
+
+      const newActivity = new ActivitiesModel({
+        name,
+        categories: categoryIds,
+        scheduleDay: scheduleDayIds,
+        scheduleHour: scheduleHourIds,
+        centers: centerIds,
+      });
+
+      const savedActivity = await newActivity.save();
+      const populatedActivity = await ActivitiesModel.findById(savedActivity._id)
+        .populate("categories")
+        .populate("scheduleDay")
+        .populate("scheduleHour")
+        .populate("centers");
+
+      res.status(201).json(populatedActivity);
     } catch (error) {
-        throw error;
+      console.error(error);
+      res.status(500).json({
+        message: "Hubo un error al crear la actividad.",
+        error: error.message,
+      });
     }
+  }
+
+  // Obtener todas las actividades
+  async getAllActivities(req, res) {
+    try {
+      const activities = await ActivitiesModel.find()
+        .populate("categories")
+        .populate("scheduleDay")
+        .populate("scheduleHour")
+        .populate("centers");
+      res.status(200).json(activities);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Hubo un error al obtener las actividades." });
+    }
+  }
+
+  // Obtener una actividad por ID
+  async getActivityById(req, res) {
+    try {
+      const activity = await ActivitiesModel.findById(req.params.id)
+        .populate("categories")
+        .populate("scheduleDay")
+        .populate("scheduleHour")
+        .populate("centers");
+      if (!activity) {
+        return res.status(404).json({ message: "Actividad no encontrada." });
+      }
+      res.status(200).json(activity);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Hubo un error al obtener la actividad." });
+    }
+  }
+
+  // Actualizar una actividad por ID
+  async updateActivity(req, res) {
+    try {
+      const { name, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+
+      const centerIds = await Promise.all(centerNames.map(async (name) => {
+        const center = await Center.findOne({ name });
+        if (!center) {
+          throw new Error(`El centro proporcionado (${name}) no existe.`);
+        }
+        return center._id;
+      }));
+
+      const categoryIds = await Promise.all(categoryNames.map(async (name) => {
+        const category = await Category.findOne({ name });
+        if (!category) {
+          throw new Error(`La categoría proporcionada (${name}) no existe.`);
+        }
+        return category._id;
+      }));
+
+      const scheduleDayIds = await Promise.all(scheduleDays.map(async (day) => {
+        const foundDay = await ScheduleDay.findOne({ days: day });
+        if (!foundDay) {
+          throw new Error(`El día proporcionado (${day}) no existe.`);
+        }
+        return foundDay._id;
+      }));
+
+      const scheduleHourIds = await Promise.all(scheduleHours.map(async (hour) => {
+        const foundHour = await ScheduleHour.findOne({ range: hour });
+        if (!foundHour) {
+          throw new Error(`La hora proporcionada (${hour}) no existe.`);
+        }
+        return foundHour._id;
+      }));
+
+      const updatedActivity = await ActivitiesModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          name,
+          categories: categoryIds,
+          scheduleDay: scheduleDayIds,
+          scheduleHour: scheduleHourIds,
+          centers: centerIds,
+        },
+        { new: true }
+      ).populate("categories").populate("scheduleDay").populate("scheduleHour").populate("centers");
+
+      if (!updatedActivity) {
+        return res.status(404).json({ message: "Actividad no encontrada." });
+      }
+      res.status(200).json(updatedActivity);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Hubo un error al actualizar la actividad." });
+    }
+  }
+
+  // Eliminar una actividad por ID
+  async deleteActivity(req, res) {
+    try {
+      const deletedActivity = await ActivitiesModel.findByIdAndDelete(req.params.id);
+      if (!deletedActivity) {
+        return res.status(404).json({ message: "Actividad no encontrada." });
+      }
+      res.status(200).json({ message: "Actividad eliminada exitosamente." });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Hubo un error al eliminar la actividad." });
+    }
+  }
+
+  // Asignar una actividad a un estudiante
+  async assignActivityToStudent(req, res) {
+    try {
+      const { activityId, studentId, categoryName, scheduleDay, scheduleHour, centerName } = req.body;
+
+      const activityFound = await ActivitiesModel.findById(activityId);
+      if (!activityFound) {
+        return res.status(400).json({ message: "La actividad proporcionada no existe." });
+      }
+
+      const studentFound = await StudentModel.findById(studentId);
+      if (!studentFound) {
+        return res.status(400).json({ message: "El estudiante proporcionado no existe." });
+      }
+
+      const categoryFound = await Category.findOne({ name: categoryName });
+      if (!categoryFound) {
+        return res.status(400).json({ message: "La categoría proporcionada no existe." });
+      }
+
+      const scheduleDayFound = await ScheduleDay.findOne({ days: scheduleDay });
+      if (!scheduleDayFound) {
+        return res.status(400).json({ message: `El día proporcionado (${scheduleDay}) no existe.` });
+      }
+
+      const scheduleHourFound = await ScheduleHour.findOne({ range: scheduleHour });
+      if (!scheduleHourFound) {
+        return res.status(400).json({ message: `La hora proporcionada (${scheduleHour}) no existe.` });
+      }
+
+      const centerFound = await Center.findOne({ name: centerName });
+      if (!centerFound) {
+        return res.status(400).json({ message: "El centro proporcionado no existe." });
+      }
+
+      // Si el estudiante no tiene centro o curso asignados, asignarlos
+      if (!studentFound.center) {
+        studentFound.center = centerFound._id;
+      }
+      if (!studentFound.course) {
+        studentFound.course = "Curso no especificado"; // Puedes ajustar el valor predeterminado según sea necesario
+      }
+
+      studentFound.activities.push({
+        activity: activityFound._id,
+        category: categoryFound._id,
+        scheduleDay: scheduleDayFound._id,
+        scheduleHour: scheduleHourFound._id,
+        center: centerFound._id
+      });
+
+      await studentFound.save();
+
+      const newAssignment = new ActivitiesStudentsModel({
+        student: studentFound._id,
+        activity: activityFound._id,
+      });
+
+      await newAssignment.save();
+
+      res.status(200).json({ message: "Actividad asignada exitosamente al estudiante." });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "Hubo un error al asignar la actividad al estudiante.",
+        error: error.message,
+      });
+    }
+  }
 }
 
-// Crear actividad para CEIP Ciudad de Los Ángeles
-async function createActivityForCiudadDeLosAngeles() {
-    try {
-        const categoryIds = ['663cbadad39ea1d39f199577', '664273245517263a7606c889', '664273855517263a7606c88a', '664273ee900bb91b71cf8797', '6642741a900bb91b71cf8799', '6642742a900bb91b71cf879b', '6642747e900bb91b71cf879f', '664274de900bb91b71cf87a3', '66427511900bb91b71cf87a5', '664275a9900bb91b71cf87a7', '664275bd900bb91b71cf87a9', '664275d5900bb91b71cf87ab', '664275e8900bb91b71cf87ad', '6642760c900bb91b71cf87af', '66427627900bb91b71cf87b1', '6642764c900bb91b71cf87b3'];
-        const centerIds = ['66425f5c7c184be5f79d926d'];
-
-        const activityData = {
-            activity: 'Fútbol Sala',
-            categories: categoryIds,
-            centers: [centerIds[0]]
-        };
-
-        const savedActivity = await createActivityWithDetails(activityData);
-        console.log('Actividad de Fútbol Sala para CEIP Ciudad de Los Ángeles creada exitosamente');
-        return savedActivity;
-    } catch (error) {
-        console.error('Error al crear actividad para CEIP Ciudad de Los Ángeles:', error);
-        throw error;
-    }
-}
-
-// Crear actividad para CEIP Barcelona
-async function createActivityForBarcelona() {
-    try {
-        const categoryIds = ['664273245517263a7606c889', '664273855517263a7606c88a', '6642760c900bb91b71cf87af', '66427627900bb91b71cf87b1'];
-        const centerIds = ['66425f6bf84935852fd2675a'];
-
-        const activityData = {
-            activity: 'Fútbol Sala',
-            categories: [categoryIds[1]], // ID de la categoría "Prebenjamín"
-            centers: [centerIds[0]]
-        };
-
-        const savedActivity = await createActivityWithDetails(activityData);
-        console.log('Actividad de Fútbol Sala para CEIP Barcelona creada exitosamente');
-        return savedActivity;
-    } catch (error) {
-        console.error('Error al crear actividad para CEIP Barcelona:', error);
-        throw error;
-    }
-}
-
-// Crear actividad para IES Ciudad de Los Ángeles
-async function createActivityForIesCiudadDeLosAngeles() {
-    try {
-        const categoryIds = ['663cbadad39ea1d39f199577', /* Inserta aquí los IDs de las categorías restantes */];
-        const centerIds = ['66425f90f84935852fd2675b'];
-
-        const activityData = {
-            activity: 'Voleybol',
-            categories: categoryIds,
-            centers: [centerIds[0]]
-        };
-
-        const savedActivity = await createActivityWithDetails(activityData);
-        console.log('Actividad de Fútbol Sala para IES Ciudad de Los Ángeles creada exitosamente');
-        return savedActivity;
-    } catch (error) {
-        console.error('Error al crear actividad para IES Ciudad de Los Ángeles:', error);
-        throw error;
-    }
-}
-
-export { createActivityWithDetails, createActivityForCiudadDeLosAngeles, createActivityForBarcelona, createActivityForIesCiudadDeLosAngeles };
+export default new ActivitiesController();
