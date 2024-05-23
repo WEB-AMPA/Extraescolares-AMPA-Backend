@@ -23,35 +23,29 @@ export const registerAttendance = async (req, res) => {
 
 
 // Controlador para obtener la asistencia de un estudiante en un rango de fechas
-export const getAttendanceByStudent = async (req, res) => {
+export const getAttendancesByStudentAndDateRange = async (req, res) => {
   try {
-    const { student, start_date, end_date } = req.params;
+    const { studentId } = req.params;
+    const { startDate, endDate } = req.query;
 
-    // Convertir las fechas a objetos Date
-    const startDate = new Date(start_date);
-    const endDate = new Date(end_date);
-
-    // Consultar la asistencia del estudiante en el rango de fechas especificado
-    const attendance = await AttendanceModel.find({
-      activities_students: student,
-      date: { $gte: startDate, $lte: endDate } 
-    }).populate({
-      path: 'activities_students',
-      populate: {
-        path: 'student', 
-        model: 'students' 
+    const attendances = await AttendanceModel.find({
+      activities_students: studentId,
+      date: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
       }
     }).populate({
       path: 'activities_students',
-      populate: {
-        path: 'activity', // 
-        model: 'activities' 
-      }
+      populate: [
+        { path: 'student', model: 'students' },
+        { path: 'activity', model: 'activities' }
+      ]
     });
 
-    res.status(200).json(attendance);
+    res.status(200).json(attendances);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
   }
 };
 

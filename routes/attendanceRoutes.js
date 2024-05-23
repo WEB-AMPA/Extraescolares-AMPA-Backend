@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerAttendance, getAttendanceByStudent, updateAttendance, getAllAttendances } from '../controllers/AttendanceController.js';
+import { registerAttendance, getAttendancesByStudentAndDateRange, updateAttendance, getAllAttendances } from '../controllers/AttendanceController.js';
 
 const router = express.Router();
 
@@ -7,9 +7,8 @@ const router = express.Router();
 router.post('/register', registerAttendance);
 
 // Ruta para obtener la asistencia de un estudiante en un rango de fechas
-router.get('/:student_id/from/:start_date/:end_date', getAttendanceByStudent);
+router.get('/attendance/:student_id/', getAttendancesByStudentAndDateRange);
 
-students/:startDate/:endDate
 
 // Ruta para obtener todas las asistencias
 router.get('/attendance', getAllAttendances);
