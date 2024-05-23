@@ -14,9 +14,9 @@ import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
 import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js";
 import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
 import attendanceRoutes from './routes/attendanceRoutes.js'
-
+import breakfastRoutes from './routes/breakfastRoutes.js'
 import mongoose from "mongoose";
-
+import cors from "cors";
 dotenv.config();
 
 const app = express();
@@ -38,8 +38,8 @@ app.use("/api/activities", activitiesRouter);
 app.use("/api/scheduleDays", scheduleDaysRouter);
 app.use("/api/scheduleHours", scheduleHoursRouter);
 app.use("/api/activitiesStudents", activitiesStudentsRouter);
-
-app.use('/', attendanceRoutes)
+app.use("/", breakfastRoutes);
+app.use("/", attendanceRoutes);
 
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT ?? 3000;
