@@ -39,8 +39,7 @@ app.use("/api/scheduleDays", scheduleDaysRouter);
 app.use("/api/scheduleHours", scheduleHoursRouter);
 app.use("/api/activitiesStudents", activitiesStudentsRouter);
 app.use("/", breakfastRoutes);
-app.use("/", attendanceRoutes);
-
+app.use("/api", attendanceRoutes);
 // Puerto en el que se ejecutará el servidor
 const PORT = process.env.PORT ?? 3000;
 

@@ -7,6 +7,6 @@ const rateSchema = new Schema({
   price:{ type: Number}
 });
 
-const RateModel = mongoose.model('breakfastprice', rateSchema);
+const RateModel = mongoose.model('breakfasts_rates', rateSchema);
 
 export default RateModel;
