@@ -4,7 +4,7 @@ import { registerAttendance, getAttendancesByStudentAndDateRange, updateAttendan
 const router = express.Router();
 
 // Ruta para registrar la asistencia a una actividad
-router.post('/register', registerAttendance);
+router.post('/registerAttendance', registerAttendance);
 
 // Ruta para obtener la asistencia de un estudiante en un rango de fechas
 router.get('/attendance/:student_id/', getAttendancesByStudentAndDateRange);
