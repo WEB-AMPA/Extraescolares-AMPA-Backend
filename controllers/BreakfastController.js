@@ -8,14 +8,28 @@ export const createBreakfastAttendance = async (req, res) => {
             return res.status(400).json({ message: 'Todos los campos son requeridos: date, student_id, attendance' });
         }
 
-        const newBreakfast = new BreakfastModel(req.body);
+         // Verificar si ya existe un registro de asistencia para el mismo estudiante y fecha
+        const existingAttendance = await BreakfastModel.findOne({ date, student_id });
+
+        if (existingAttendance) {
+             // Actualizar el registro existente
+            existingAttendance.attendance = attendance;
+            const updatedAttendance = await existingAttendance.save();
+            return res.status(200).json(updatedAttendance);
+        }
+
+
+        const newBreakfast = new BreakfastModel({
+            date,
+            student_id,
+            attendance,
+        });
         const savedBreakfast = await newBreakfast.save();
         res.status(201).json(savedBreakfast);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
-
 // Obtener todas las asistencias de desayuno
 export const getAllBreakfastAttendances = async (req, res) => {
     try {
@@ -55,6 +69,37 @@ export const getBreakfastAttendancesByStudentAndDate = async (req, res) => {
     }
 };
 
+// Obtener asistencias de desayuno por fecha
+export const getBreakfastAttendancesByDate = async (req, res) => {
+    try {
+        const { date } = req.params; // Obtener el parámetro de fecha de los parámetros de ruta
+        const queryDate = new Date(date);
+
+        if (isNaN(queryDate.getTime())) {
+            return res.status(400).json({ message: 'Invalid date format' });
+        }
+
+        const startOfDay = new Date(queryDate.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(queryDate.setHours(23, 59, 59, 999));
+
+        const breakfasts = await BreakfastModel.find({
+            date: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        }).populate({
+            path: 'student_id',
+            select: 'name lastname observations'
+        });
+
+        res.status(200).json(breakfasts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
 // Obtener una asistencia de desayuno por ID
 export const getBreakfastAttendanceById = async (req, res) => {
     try {
@@ -70,6 +115,8 @@ export const getBreakfastAttendanceById = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 
 // Actualizar una asistencia de desayuno por ID

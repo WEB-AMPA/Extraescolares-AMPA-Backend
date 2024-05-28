@@ -54,6 +54,22 @@ class StudentsController {
     }
   }
 
+
+
+  // Obtener todos los estudiantes que tienen el desayuno habilitado
+  async getStudentsWithBreakfast(req, res) {
+    try {
+      const students = await StudentModel.find({ breakfast: true });
+      res.status(200).json(students);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al obtener los estudiantes con desayuno.', error: error.message });
+    }
+  }
+
+
+
+
   async updateStudent(req, res) {
     try {
       const { name, lastname, breakfast, observations, course, partner_id, centerName } = req.body;
