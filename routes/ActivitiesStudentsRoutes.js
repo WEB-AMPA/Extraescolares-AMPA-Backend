@@ -4,6 +4,7 @@ import activitiesStudentsController from '../controllers/ActivitiesStudentsContr
 const router = express.Router();
 
 router.get('/', activitiesStudentsController.getAllAssignments);
+router.get('/by-activity/:activityId', activitiesStudentsController.getStudentsByActivity);
 router.get('/:id', activitiesStudentsController.getAssignmentById);
 router.post('/', activitiesStudentsController.createAssignment);
 router.put('/:id', activitiesStudentsController.updateAssignment);
