@@ -145,9 +145,9 @@ export const deleteBreakfastAttendanceById = async (req, res) => {
     try {
         const deletedBreakfast = await BreakfastModel.findByIdAndDelete(req.params.id);
         if (!deletedBreakfast) {
-            return res.status(404).json({ message: 'Asistencia de desayuno no encontrada' });
+            return res.status(404).json({ message: 'Asistencia al desayuno no encontrada' });
         }
-        res.status(200).json({ message: 'Asistencia de desayuno eliminada correctamente' });
+        res.status(200).json({ message: 'Asistencia al desayuno eliminada correctamente' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
