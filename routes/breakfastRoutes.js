@@ -1,13 +1,19 @@
 import express from 'express';
-import { createBreakfast, getAllBreakfasts, getBreakfastById, updateBreakfastById, deleteBreakfastById } from '../controllers/BreakfastController.js';
+import {
+    createBreakfastAttendance,
+    getAllBreakfastAttendances,
+    getBreakfastAttendanceById,
+    updateBreakfastAttendanceById,
+    deleteBreakfastAttendanceById
+} from '../controllers/BreakfastController.js';
 
 const router = express.Router();
 
-// Rutas para el CRUD de desayunos
-router.post('/breakfasts', createBreakfast);
-router.get('/breakfasts', getAllBreakfasts);
-router.get('/breakfasts/:id', getBreakfastById);
-router.put('/breakfasts/:id', updateBreakfastById);
-router.delete('/breakfasts/:id', deleteBreakfastById);
+// Rutas para gestionar asistencias de desayunos
+router.post('/breakfast-attendance', createBreakfastAttendance); // Crear una nueva asistencia de desayuno
+router.get('/breakfast-attendance', getAllBreakfastAttendances); // Obtener todas las asistencias de desayuno
+router.get('/breakfast-attendance/:id', getBreakfastAttendanceById); // Obtener una asistencia de desayuno por ID
+router.put('/breakfast-attendance/:id', updateBreakfastAttendanceById); // Actualizar una asistencia de desayuno por ID
+router.delete('/breakfast-attendance/:id', deleteBreakfastAttendanceById); // Eliminar una asistencia de desayuno por ID
 
 export default router;
