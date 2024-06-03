@@ -3,13 +3,13 @@ import AttendanceModel from '../models/AttendanceModel.js';
 // Controlador para registrar la asistencia a una actividad
 export const registerAttendance = async (req, res) => {
   try {
-    const { date, attendance, activities_students } = req.body;
+    const { date, attendance, activities_student } = req.body;
 
     // Crear una nueva instancia de asistencia
     const newAttendance = new AttendanceModel({
       date: date ? new Date(date) : new Date(), // Usa la fecha proporcionada o la fecha actual
       attendance,
-      activities_students
+      activities_student
     });
 
     // Guardar la asistencia en la base de datos
@@ -25,21 +25,28 @@ export const registerAttendance = async (req, res) => {
 // Controlador para obtener la asistencia de un estudiante en un rango de fechas
 export const getAttendancesByStudentAndDateRange = async (req, res) => {
   try {
-    const { studentId } = req.params;
-    const { startDate, endDate } = req.query;
+    const { student, start_date, end_date } = req.params;
 
-    const attendances = await AttendanceModel.find({
-      activities_students: studentId,
-      date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
+    // Convertir las fechas a objetos Date
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    // Consultar la asistencia del estudiante en el rango de fechas especificado
+    const attendance = await AttendanceModel.find({
+      activities_student: student,
+      date: { $gte: startDate, $lte: endDate } 
+    }).populate({
+      path: 'activities_student',
+      populate: {
+        path: 'student', 
+        model: 'students' 
       }
     }).populate({
-      path: 'activities_students',
-      populate: [
-        { path: 'student', model: 'students' },
-        { path: 'activity', model: 'activities' }
-      ]
+      path: 'activities_student',
+      populate: {
+        path: 'activity', // 
+        model: 'activities' 
+      }
     });
 
     res.status(200).json(attendances);
@@ -72,7 +79,7 @@ export const getAllAttendances = async (req, res) => {
 
 
 
-// Controlador para actualizar la asistencia de un estudiante 
+// Controlador para actualizar la asistencia de un estudiante en una fecha específica
 export const updateAttendance = async (req, res) => {
   try {
     const { attendance_id } = req.params;
@@ -86,24 +93,3 @@ export const updateAttendance = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-// Controlador para eliminar una asistencia por su ID
-export const deleteAttendance = async (req, res) => {
-  try {
-    const { attendance_id } = req.params;
-
-    // Buscar y eliminar la asistencia por su ID
-    const deletedAttendance = await AttendanceModel.findByIdAndDelete(attendance_id);
-
-    if (!deletedAttendance) {
-      return res.status(404).json({ message: 'Asistencia no encontrada' });
-    }
-
-    res.status(200).json({ message: 'Asistencia eliminada exitosamente' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-

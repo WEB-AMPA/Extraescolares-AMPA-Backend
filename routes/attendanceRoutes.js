@@ -13,8 +13,11 @@ router.get('/attendance/:student_id/', getAttendancesByStudentAndDateRange);
 // Ruta para obtener todas las asistencias
 router.get('/attendance', getAllAttendances);
 
-// Ruta para actualizar la asistencia de un estudiante en una fecha específica
-router.put('/:attendance_id', updateAttendance);
+// Ruta para actualizar la asistencia
+router.put('/attendances/:attendance_id', updateAttendance);
+
+// Ruta para eliminar la asistencia
+router.delete('/attendances/:attendance_id', deleteAttendance);
 
 
 // Ruta para eliminar una asistencia
