@@ -5,13 +5,12 @@ import userRoutes from './routes/UserRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
 import loginRoutes from './routes/LoginRoutes.js';
 import activitiesRouter from './routes/ActivitiesRoutes.js';
-import categoryRoutes from './routes/CategoryRoutes.js';
+import categoryRoutes from './routes/CategoriesRoutes.js';
 import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
 import cors from 'cors';
-import mongoose from "mongoose";
 import nodemailer from 'nodemailer';
 
 
@@ -30,7 +29,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', userRoutes);
-app.use('/', partnerRoutes);
+app.use('/api/partners', partnerRoutes);
 app.use('/', loginRoutes);
 app.use('/', studentsRoutes);
 app.use('/api/activities', activitiesRouter);
@@ -94,7 +93,7 @@ app.post("/send_recovery_email", (req, res) => {
 
 
 // Puerto en el que se ejecutará el servidor
-const PORT = process.env.PORT ?? 3000;
+//const PORT = process.env.PORT ?? 3000;
 
 // Iniciar el servidor
 app.listen(PORT, () => {
