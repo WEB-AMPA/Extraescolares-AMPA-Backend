@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UsersModel.js';
+import RoleModel from '../models/RoleModel.js';
 
 // Controlador para iniciar sesión
 export const loginUser = async (req, res) => {
@@ -41,10 +42,10 @@ export const loginUser = async (req, res) => {
       maxAge: 3600000 // en una hora la cookie se eliminará
     });
 
-
-    
+    const roleName =  await RoleModel.findById(user.role)
+  
     // Devolver el token como respuesta
-    res.status(200).json({ token, role: user.role });
+    res.status(200).json({ token, role: roleName.name });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,5 +1,4 @@
 import StudentModel from '../models/StudentModels.js';
-import PartnerModel from '../models/PartnerModel.js';
 
 
 // Crear un nuevo estudiante y asignar actividades
