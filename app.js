@@ -13,7 +13,7 @@ import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
 import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
 import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js";
 import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
-import attendanceRoutes from './routes/attendanceRoutes.js'
+import attendanceRoutes from './routes/AttendanceRoutes.js'
 import breakfastRoutes from './routes/breakfastRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'

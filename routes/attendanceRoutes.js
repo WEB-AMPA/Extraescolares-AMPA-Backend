@@ -1,19 +1,26 @@
 import express from 'express';
-import { registerAttendance, getAttendanceByStudent, updateAttendance, getAllAttendances } from '../controllers/AttendanceController.js';
+import { registerAttendance, getAttendancesByStudentAndDateRange, updateAttendance, getAllAttendances, deleteAttendance } from '../controllers/AttendanceController.js';
 
 const router = express.Router();
 
 // Ruta para registrar la asistencia a una actividad
-router.post('/register', registerAttendance);
+router.post('/registerAttendance', registerAttendance);
 
 // Ruta para obtener la asistencia de un estudiante en un rango de fechas
-router.get('/student/:student_id/from/:start_date/to/:end_date', getAttendanceByStudent);
+router.get('/attendance/:student_id/', getAttendancesByStudentAndDateRange);
 
 
 // Ruta para obtener todas las asistencias
 router.get('/attendance', getAllAttendances);
 
-// Ruta para actualizar la asistencia de un estudiante en una fecha específica
-router.put('/:attendance_id', updateAttendance);
+// Ruta para actualizar la asistencia
+router.put('/attendances/:attendance_id', updateAttendance);
+
+// Ruta para eliminar la asistencia
+router.delete('/attendances/:attendance_id', deleteAttendance);
+
+
+// Ruta para eliminar una asistencia
+router.delete('/:attendance_id', deleteAttendance);
 
 export default router;

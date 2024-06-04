@@ -23,7 +23,7 @@ export const registerAttendance = async (req, res) => {
 
 
 // Controlador para obtener la asistencia de un estudiante en un rango de fechas
-export const getAttendanceByStudent = async (req, res) => {
+export const getAttendancesByStudentAndDateRange = async (req, res) => {
   try {
     const { student, start_date, end_date } = req.params;
 
@@ -49,9 +49,10 @@ export const getAttendanceByStudent = async (req, res) => {
       }
     });
 
-    res.status(200).json(attendance);
+    res.status(200).json(attendances);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
   }
 };
 
@@ -59,8 +60,15 @@ export const getAttendanceByStudent = async (req, res) => {
 // Controlador para obtener todas las asistencias
 export const getAllAttendances = async (req, res) => {
   try {
-    // Consultar todas las asistencias
-    const allAttendances = await AttendanceModel.find();
+    // Consultar todas las asistencias y poblar el campo activities_student
+    const allAttendances = await AttendanceModel.find()
+      .populate({
+        path: 'activities_students',
+        populate: [
+          { path: 'student', model: 'students' },
+          { path: 'activity', model: 'activities' }
+        ]
+      });
 
     res.status(200).json(allAttendances);
   } catch (error) {
