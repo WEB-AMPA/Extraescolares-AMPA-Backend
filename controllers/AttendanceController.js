@@ -5,19 +5,91 @@ export const registerAttendance = async (req, res) => {
   try {
     const { date, attendance, activities_student } = req.body;
 
-    // Crear una nueva instancia de asistencia
-    const newAttendance = new AttendanceModel({
-      date: date ? new Date(date) : new Date(), // Usa la fecha proporcionada o la fecha actual
-      attendance,
+    // Buscar un registro de asistencia existente para la misma fecha, actividad y estudiante
+    let attendanceRecord = await AttendanceModel.findOne({
+      date: new Date(date),
       activities_student
     });
 
-    // Guardar la asistencia en la base de datos
-    await newAttendance.save();
+    if (attendanceRecord) {
+      // Si el registro ya existe, actualizar la asistencia
+      attendanceRecord.attendance = attendance;
+      await attendanceRecord.save();
+    } else {
+      // Si no existe, crear una nueva instancia de asistencia
+      attendanceRecord = new AttendanceModel({
+        date: date ? new Date(date) : new Date(), // Usa la fecha proporcionada o la fecha actual
+        attendance,
+        activities_student
+      });
+      await attendanceRecord.save();
+    }
 
-    res.status(201).json({ message: 'Asistencia registrada exitosamente' });
+    res.status(201).json({ message: 'Asistencia registrada exitosamente', attendanceRecord });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Controlador para obtener la asistencia de un estudiante en un rango de fechas para el calendario
+export const getAttendanceForCalendar = async (req, res) => {
+  try {
+    const { student, start_date, end_date } = req.params;
+
+    // Convertir las fechas a objetos Date
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    // Consultar la asistencia del estudiante en el rango de fechas especificado
+    const attendances = await AttendanceModel.find({
+      activities_student: student,
+      date: { $gte: startDate, $lte: endDate } 
+    }).lean();
+
+    // Mapear las asistencias para el calendario
+    const calendarData = {};
+    attendances.forEach(attendance => {
+      const date = attendance.date.toISOString().split('T')[0];
+      calendarData[date] = attendance.attendance === 1 ? 'present' : 'absent';
+    });
+
+    res.status(200).json(calendarData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al obtener las asistencias para el calendario.' });
+  }
+};
+
+
+// Controlador para obtener la asistencia de un estudiante a una actividad en un rango de fechas
+export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => {
+  try {
+    const { student_id, activity_id, start_date, end_date } = req.params;
+
+    // Convertir las fechas a objetos Date
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    // Consultar las actividades del estudiante
+    const activityStudent = await ActivitiesStudentsModel.findOne({
+      student: student_id,
+      activity: activity_id
+    }).lean();
+
+    if (!activityStudent) {
+      return res.status(404).json({ message: 'No se encontró la actividad para el estudiante especificado.' });
+    }
+
+    // Consultar la asistencia del estudiante en el rango de fechas especificado
+    const attendances = await AttendanceModel.find({
+      activities_student: activityStudent._id,
+      date: { $gte: startDate, $lte: endDate }
+    });
+
+    res.status(200).json(attendances);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
   }
 };
 
