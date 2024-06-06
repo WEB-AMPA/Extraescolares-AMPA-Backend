@@ -85,6 +85,35 @@ export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => 
 };
 
 
+
+export const getAttendanceByActivitiesStudentInDateRange = async (req, res) => {
+  try {
+    const { activities_student_id, start_date, end_date } = req.params;
+
+    // Convertir las fechas a objetos Date
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    // Verificar que el ID de activities_student es válido
+    const activityStudent = await ActivitiesStudentsModel.findById(activities_student_id).lean();
+
+    if (!activityStudent) {
+      return res.status(404).json({ message: 'No se encontró la actividad para el estudiante especificado.' });
+    }
+
+    // Consultar la asistencia del estudiante en el rango de fechas especificado
+    const attendances = await AttendanceModel.find({
+      activities_student: activities_student_id, // Usar el ID de activities_student
+      date: { $gte: startDate, $lte: endDate }
+    }).populate('activities_student');
+
+    res.status(200).json(attendances);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
+  }
+};
+
 // Controlador para obtener la asistencia de un estudiante en un rango de fechas
 export const getAttendancesByStudentAndDateRange = async (req, res) => {
   try {
@@ -222,12 +251,3 @@ export const updateAttendance = async (req, res) => {
 
 
 
-export const deleteAttendance = async (req, res) => {
-  try {
-    const { attendance_id } = req.params;
-    await AttendanceModel.findByIdAndDelete(attendance_id);
-    res.status(200).json({ message: 'Asistencia eliminada exitosamente' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
