@@ -31,35 +31,6 @@ export const registerAttendance = async (req, res) => {
   }
 };
 
-// Controlador para obtener la asistencia de un estudiante en un rango de fechas para el calendario
-export const getAttendanceForCalendar = async (req, res) => {
-  try {
-    const { student, start_date, end_date } = req.params;
-
-    // Convertir las fechas a objetos Date
-    const startDate = new Date(start_date);
-    const endDate = new Date(end_date);
-
-    // Consultar la asistencia del estudiante en el rango de fechas especificado
-    const attendances = await AttendanceModel.find({
-      activities_student: student,
-      date: { $gte: startDate, $lte: endDate } 
-    }).lean();
-
-    // Mapear las asistencias para el calendario
-    const calendarData = {};
-    attendances.forEach(attendance => {
-      const date = attendance.date.toISOString().split('T')[0];
-      calendarData[date] = attendance.attendance === 1 ? 'present' : 'absent';
-    });
-
-    res.status(200).json(calendarData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Hubo un error al obtener las asistencias para el calendario.' });
-  }
-};
-
 
 // Controlador para obtener la asistencia de un estudiante a una actividad en un rango de fechas
 export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => {
@@ -94,31 +65,19 @@ export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => 
 };
 
 
-// Controlador para obtener la asistencia de un estudiante en un rango de fechas
-export const getAttendancesByStudentAndDateRange = async (req, res) => {
+export const getStudentAttendanceForActivityAndDateRange = async (req, res) => {
   try {
-    const { student, start_date, end_date } = req.params;
+    const { student_id, activity_id, start_date, end_date } = req.params;
 
     // Convertir las fechas a objetos Date
     const startDate = new Date(start_date);
     const endDate = new Date(end_date);
 
-    // Consultar la asistencia del estudiante en el rango de fechas especificado
-    const attendance = await AttendanceModel.find({
-      activities_student: student,
+    // Consultar la asistencia del estudiante para la actividad y el rango de fechas especificado
+    const attendances = await AttendanceModel.find({
+      activities_student: student_id,
+      'activities_student.activity': activity_id,
       date: { $gte: startDate, $lte: endDate } 
-    }).populate({
-      path: 'activities_student',
-      populate: {
-        path: 'student', 
-        model: 'students' 
-      }
-    }).populate({
-      path: 'activities_student',
-      populate: {
-        path: 'activity', // 
-        model: 'activities' 
-      }
     });
 
     res.status(200).json(attendances);

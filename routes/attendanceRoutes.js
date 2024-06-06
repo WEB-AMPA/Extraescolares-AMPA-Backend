@@ -8,7 +8,7 @@ import {
     deleteAttendance,
     getStudentsAndAttendanceByActivityAndDate,
     getAttendanceByStudentAndActivityInDateRange,
-    getAttendanceForCalendar } from '../controllers/AttendanceController.js';
+     } from '../controllers/AttendanceController.js';
 
 const router = express.Router();
 
@@ -18,13 +18,14 @@ router.post('/registerAttendance', registerAttendance);
 // Ruta para obtener la asistencia de un estudiante en un rango de fechas
 router.get('/attendance/:student_id/', getAttendancesByStudentAndDateRange);
 
+router.get('/attendance/student/:student_id/activity/:activity_id/dateRange/:start_date/:end_date', getStudentAttendanceForActivityAndDateRange);
+
 // Ruta para obtener para obtener estudiantes y su asistencia por actividad y fecha
 router.get('/activitiesStudents/by-activity-and-date/:activity_id/:date', getStudentsAndAttendanceByActivityAndDate);
 
 // Ruta para obtener para obtener estudiantes y su asistencia por actividad y fecha
 router.get('/attendance/student/:student_id/activity/:activity_id/date-range/:start_date/:end_date', getAttendanceByStudentAndActivityInDateRange);
 
-router.get('/ http://localhost:3010/api/attendance/calendar/student/:studentId/:startDate/:endDate', getAttendanceForCalendar);
 
 // Ruta para obtener todas las asistencias
 router.get('/attendance', getAllAttendances);
