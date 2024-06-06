@@ -13,7 +13,7 @@ import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
 import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
 import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js";
 import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
-import attendanceRoutes from './routes/AttendanceRoutes.js'
+import attendanceRoutes from './routes/attendanceRoutes.js'
 import breakfastRoutes from './routes/breakfastRoutes.js'
 import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
@@ -43,7 +43,6 @@ app.use("/api/activities", activitiesRouter);
 app.use("/api/scheduleDays", scheduleDaysRouter);
 app.use("/api/scheduleHours", scheduleHoursRouter);
 app.use("/api/activitiesStudents", activitiesStudentsRouter);
-app.use('/', attendanceRoutes);
 app.use("/", breakfastRoutes);
 app.use("/api", attendanceRoutes);
 

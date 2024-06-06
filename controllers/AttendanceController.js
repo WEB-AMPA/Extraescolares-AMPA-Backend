@@ -32,6 +32,25 @@ export const registerAttendance = async (req, res) => {
 };
 
 
+export const getAttendanceByStudentAndActivity = async (req, res) => {
+  const { studentId, activityId, startDate, endDate } = req.params;
+
+  try {
+      const attendanceRecords = await AttendanceModel.find({
+          'activities_student': studentId,
+          'activity': activityId,
+          'date': {
+              $gte: new Date(startDate),
+              $lte: new Date(endDate)
+          }
+      }).populate('activities_student');
+
+      res.status(200).json(attendanceRecords);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching attendance records', error });
+  }
+};
+
 // Controlador para obtener la asistencia de un estudiante a una actividad en un rango de fechas
 export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => {
   try {
@@ -53,10 +72,11 @@ export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => 
 
     // Consultar la asistencia del estudiante en el rango de fechas especificado
     const attendances = await AttendanceModel.find({
-      activities_student: activityStudent._id,
-      date: { $gte: startDate, $lte: endDate }
+      'activities_student.student': student_id,
+      'activities_student.activity': activity_id,
+      date: { $gte: startDate, $lte: endDate } 
     });
-
+    
     res.status(200).json(attendances);
   } catch (error) {
     console.error(error);
@@ -65,19 +85,31 @@ export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => 
 };
 
 
-export const getStudentAttendanceForActivityAndDateRange = async (req, res) => {
+// Controlador para obtener la asistencia de un estudiante en un rango de fechas
+export const getAttendancesByStudentAndDateRange = async (req, res) => {
   try {
-    const { student_id, activity_id, start_date, end_date } = req.params;
+    const { student, start_date, end_date } = req.params;
 
     // Convertir las fechas a objetos Date
     const startDate = new Date(start_date);
     const endDate = new Date(end_date);
 
-    // Consultar la asistencia del estudiante para la actividad y el rango de fechas especificado
-    const attendances = await AttendanceModel.find({
-      activities_student: student_id,
-      'activities_student.activity': activity_id,
+    // Consultar la asistencia del estudiante en el rango de fechas especificado
+    const attendance = await AttendanceModel.find({
+      activities_student: student,
       date: { $gte: startDate, $lte: endDate } 
+    }).populate({
+      path: 'activities_student',
+      populate: {
+        path: 'student', 
+        model: 'students' 
+      }
+    }).populate({
+      path: 'activities_student',
+      populate: {
+        path: 'activity', // 
+        model: 'activities' 
+      }
     });
 
     res.status(200).json(attendances);
@@ -86,6 +118,23 @@ export const getStudentAttendanceForActivityAndDateRange = async (req, res) => {
     res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
   }
 };
+
+
+//get para la asistencia de un estudiante específico para una actividad en particular en un rango de fechas dado. 
+const getAttendanceForStudentAndActivity = async (studentId, activityId) => {
+  try {
+      // Realiza la consulta para buscar los registros de asistencia que coincidan con el id del estudiante y el id de la actividad
+      const attendance = await AttendanceModel.find({ 
+          activities_student: studentId, 
+          activity: activityId 
+      });
+      
+      return attendance; // Devuelve los registros de asistencia encontrados
+  } catch (error) {
+      throw new Error('Error fetching attendance for student and activity');
+  }
+};
+
 
 
 // Controlador para Obtener Asistencia por Actividad
@@ -105,7 +154,7 @@ export const getAttendancesByActivity = async (req, res) => {
 };
 
 
-// Controlador para obtener estudiantes y su asistencia por actividad y fecha
+// Controlador para obtener estudiantes y su asistencia por actividad y fecha específica
 export const getStudentsAndAttendanceByActivityAndDate = async (req, res) => {
   try {
     const { activity_id, date } = req.params;

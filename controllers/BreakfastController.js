@@ -49,8 +49,13 @@ export const getBreakfastAttendancesByStudentAndDate = async (req, res) => {
         const { student_id } = req.params;
         const { start_date, end_date } = req.query;
 
+        // Asegurarse de que las fechas sean válidas
         const startDate = new Date(start_date);
         const endDate = new Date(end_date);
+
+        if (isNaN(startDate) || isNaN(endDate)) {
+            return res.status(400).json({ message: 'Invalid date format' });
+        }
 
         const breakfasts = await BreakfastModel.find({
             student_id,
@@ -68,6 +73,30 @@ export const getBreakfastAttendancesByStudentAndDate = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+// export const getBreakfastAttendancesByStudentAndDate = async (req, res) => {
+//     try {
+//         const { student_id } = req.params;
+//         const { start_date, end_date } = req.query;
+
+//         const startDate = new Date(start_date);
+//         const endDate = new Date(end_date);
+
+//         const breakfasts = await BreakfastModel.find({
+//             student_id,
+//             date: {
+//                 $gte: startDate,
+//                 $lte: endDate
+//             }
+//         }).populate({
+//             path: 'student_id',
+//             select: 'name lastname observations'
+//         });
+
+//         res.status(200).json(breakfasts);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// };
 
 // Obtener asistencias de desayuno por fecha
 export const getBreakfastAttendancesByDate = async (req, res) => {
@@ -97,6 +126,7 @@ export const getBreakfastAttendancesByDate = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 
