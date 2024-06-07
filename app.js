@@ -10,7 +10,6 @@ import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
 import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
-import rateRoutes from './routes/RateRoutes.js'
 import ScheduleDaysModel from "./models/ScheduleDaysModel.js";
 import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
 import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
@@ -39,8 +38,6 @@ app.use((req, res, next) => {
 mongoose.model("schedule_days", ScheduleDaysModel.schema);
 mongoose.model("schedule_hours", ScheduleHoursModel.schema);
 
-
-
 app.use("/", userRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use("/", loginRoutes);
@@ -53,7 +50,6 @@ app.use("/api/scheduleHours", scheduleHoursRouter);
 app.use("/api/activitiesStudents", activitiesStudentsRouter);
 app.use("/", breakfastRoutes);
 app.use("/api", attendanceRoutes);
-app.use('/rate', rateRoutes);
 app.use('/', roleRoutes);
 
 // Function to send email
@@ -108,8 +104,6 @@ app.post("/send_recovery_email", (req, res) => {
     .then(response => res.send(response.message))
     .catch(error => res.status(500).send(error.message));
 });
-
-
 
 // Iniciar el servidor
 app.listen(PORT, () => {

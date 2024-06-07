@@ -22,3 +22,4 @@ const studentSchema = new Schema({
 const StudentModel = mongoose.model('students', studentSchema);
 
 export default StudentModel;
+

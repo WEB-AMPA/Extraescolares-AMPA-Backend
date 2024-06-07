@@ -7,8 +7,7 @@ const partnerSchema = new Schema({
   phone_number: { type: String, required: true },
   registration_date: { type: Date, required: true },
   user_id: { type: Schema.Types.ObjectId, ref: 'users' },
-  student_id: [{ type: Schema.Types.ObjectId, ref: 'students' }],
-  breakfastprice_id: { type: Schema.Types.ObjectId, ref: 'breakfasts_rates' }
+  student_id: [{ type: Schema.Types.ObjectId, ref: 'students' }]
 });
 
 const PartnerModel = mongoose.model('partners', partnerSchema);
