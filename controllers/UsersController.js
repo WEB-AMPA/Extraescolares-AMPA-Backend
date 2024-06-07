@@ -1,11 +1,15 @@
 import UserModel from '../models/UsersModel.js';
 import bcrypt from 'bcrypt';
+import { passwordGenerated } from '../utils/passwordGenerator.js';
+import {sendEmailClient} from '../utils/sendMail.js';
+
+const { SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION} = process.env
 
 // Controlador para crear un nuevo usuario
 export const createUser = async (req, res) => {
     try {
-      const { username, password, email, role, lastname, name } = req.body;
-  
+      const { username, email, role, lastname, name } = req.body;
+
       // Verificar si el usuario ya existe
       const existingUser = await UserModel.findOne({ username });
       if (existingUser) {
@@ -13,6 +17,10 @@ export const createUser = async (req, res) => {
       }
   
       // Cifrar la contraseña
+      let password = passwordGenerated()
+
+      console.log(password)
+
       const hashedPassword = await bcrypt.hash(password, 10);
   
       // Crear un nuevo usuario con la contraseña cifrada
@@ -27,7 +35,7 @@ export const createUser = async (req, res) => {
   
       // Guardar el nuevo usuario en la base de datos
       const savedUser = await newUser.save();
-  
+      sendEmailClient(SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION, email, password )
       res.status(201).json(savedUser);
     } catch (error) {
       res.status(400).json({ message: error.message });

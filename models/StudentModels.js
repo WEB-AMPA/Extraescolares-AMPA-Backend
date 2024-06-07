@@ -8,8 +8,8 @@ const studentSchema = new Schema({
   breakfast: { type: Boolean },
   observations: { type: String },
   course: { type: String, required: true },
-  partner_id: { type: Number, required: true },
-  center: { type: Schema.Types.ObjectId, ref: 'centers', required: true }, // Campo para el centro
+  partner_number: { type: Number, required: true },
+  center: { type: Schema.Types.ObjectId, ref: 'centers', required: true },
   activities: [{
     activity: { type: Schema.Types.ObjectId, ref: 'activities' },
     category: { type: Schema.Types.ObjectId, ref: 'categories' },

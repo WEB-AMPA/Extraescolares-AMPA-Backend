@@ -1,18 +1,23 @@
 import PartnerModel from '../models/PartnerModel.js';
 import UserModel from '../models/UsersModel.js';
-import StudentModel from '../models/StudentModels.js';
 import bcrypt from 'bcrypt';
 
 // Crear un nuevo socio
 export const createPartner = async (req, res) => {
     try {
         // Obtener datos del cuerpo de la solicitud
-        const { username, password, email, lastname, name, partner_number, student_id, breakfastprice_id } = req.body;
+        const { username, password, email, lastname, name, partner_number, phone_number, registration_date, student_id, breakfastprice_id } = req.body;
 
         // Verificar si el usuario ya existe
         const existingUser = await UserModel.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ message: 'El nombre de usuario ya está en uso' });
+        }
+
+        // Verificar si el número de socio ya existe
+        const existingPartner = await PartnerModel.findOne({ partner_number });
+        if (existingPartner) {
+            return res.status(400).json({ message: 'El número de socio ya existe.' });
         }
 
         // Cifrar la contraseña
@@ -34,6 +39,8 @@ export const createPartner = async (req, res) => {
         // Crear un nuevo socio asociado al usuario
         const newPartner = new PartnerModel({
             partner_number,
+            phone_number,
+            registration_date,
             user_id: savedUser._id,
             student_id,
             breakfastprice_id
@@ -82,6 +89,14 @@ export const getPartnerById = async (req, res) => {
 // Actualizar un socio por su ID
 export const updatePartnerById = async (req, res) => {
     try {
+        const { partner_number } = req.body;
+
+        // Verificar si el número de socio ya existe para otro socio
+        const existingPartner = await PartnerModel.findOne({ partner_number, _id: { $ne: req.params.id } });
+        if (existingPartner) {
+            return res.status(400).json({ message: 'El número de socio ya existe para otro socio.' });
+        }
+
         const updatedPartner = await PartnerModel.findByIdAndUpdate(req.params.id, req.body, { new: true })
             .populate('user_id')
             .populate('student_id')
