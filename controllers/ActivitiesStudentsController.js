@@ -32,6 +32,19 @@ class ActivitiesStudentsController {
     }
   }
 
+
+  async getStudentsByActivity(req, res) {
+    try {
+      const { activityId } = req.params;
+      const students = await ActivitiesStudentsModel.find({ activity: activityId }).populate('student');
+      res.status(200).json(students);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Hubo un error al obtener los estudiantes asociados a la actividad." });
+    }
+  }
+
+  
   // Crear una nueva asignación de actividad a estudiante
   async createAssignment(req, res) {
     try {

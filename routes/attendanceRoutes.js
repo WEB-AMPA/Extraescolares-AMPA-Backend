@@ -1,19 +1,37 @@
 import express from 'express';
-import { registerAttendance, getAttendanceByStudent, updateAttendance, getAllAttendances } from '../controllers/AttendanceController.js';
+import {
+    registerAttendance,
+    getAllAttendances,
+    updateAttendance,
+    getStudentsAndAttendanceByActivityAndDate,
+    getAttendanceByActivitiesStudentInDateRange,
+    getAttendanceByStudentAndActivity} from '../controllers/AttendanceController.js';
 
 const router = express.Router();
 
 // Ruta para registrar la asistencia a una actividad
-router.post('/register', registerAttendance);
+router.post('/registerAttendance', registerAttendance);
 
-// Ruta para obtener la asistencia de un estudiante en un rango de fechas
-router.get('/student/:student_id/from/:start_date/to/:end_date', getAttendanceByStudent);
+
+// Ruta para obtener la asistencia de un estudiante para una actividad específica en un rango de fechas
+router.get('/attendance/student/:studentId/activity/:activityId/dateRange/:startDate/:endDate', getAttendanceByStudentAndActivity);
+
+
+
+// Ruta para obtener para obtener estudiantes y su asistencia por actividad y fecha
+router.get('/activitiesStudents/by-activity-and-date/:activity_id/:date', getStudentsAndAttendanceByActivityAndDate);
+
+
+// Ruta para obtener la asistencia por activities_student y rango de fechas
+router.get('/attendance/activities_student/:activities_student_id/date-range/:start_date/:end_date', getAttendanceByActivitiesStudentInDateRange);
 
 
 // Ruta para obtener todas las asistencias
 router.get('/attendance', getAllAttendances);
 
-// Ruta para actualizar la asistencia de un estudiante en una fecha específica
-router.put('/:attendance_id', updateAttendance);
+
+// Ruta para actualizar la asistencia
+router.put('/attendances/:attendance_id', updateAttendance);
+
 
 export default router;
