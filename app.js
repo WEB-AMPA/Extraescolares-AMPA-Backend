@@ -10,7 +10,6 @@ import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
 import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
-import rateRoutes from './routes/RateRoutes.js'
 import ScheduleDaysModel from "./models/ScheduleDaysModel.js";
 import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
 import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
@@ -53,7 +52,6 @@ app.use("/api/scheduleHours", scheduleHoursRouter);
 app.use("/api/activitiesStudents", activitiesStudentsRouter);
 app.use("/", breakfastRoutes);
 app.use("/api", attendanceRoutes);
-app.use('/rate', rateRoutes);
 app.use('/', roleRoutes);
 
 // Function to send email
