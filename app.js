@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 mongoose.model("schedule_days", ScheduleDaysModel.schema);
 mongoose.model("schedule_hours", ScheduleHoursModel.schema);
 
-app.use("/", userRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use("/", loginRoutes);
 app.use("/api/students", studentsRoutes); 
