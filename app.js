@@ -15,7 +15,6 @@ import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js";
 import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
 import attendanceRoutes from './routes/attendanceRoutes.js'
 import breakfastRoutes from './routes/breakfastRoutes.js'
-import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
 
 
