@@ -1,5 +1,7 @@
 import AttendanceModel from '../models/AttendanceModel.js';
 import ActivitiesStudentsModel from '../models/ActivitiesStudentsModel.js';
+
+
 // Controlador para registrar la asistencia a una actividad
 export const registerAttendance = async (req, res) => {
   try {
@@ -51,39 +53,6 @@ export const getAttendanceByStudentAndActivity = async (req, res) => {
   }
 };
 
-// Controlador para obtener la asistencia de un estudiante a una actividad en un rango de fechas
-export const getAttendanceByStudentAndActivityInDateRange = async (req, res) => {
-  try {
-    const { student_id, activity_id, start_date, end_date } = req.params;
-
-    // Convertir las fechas a objetos Date
-    const startDate = new Date(start_date);
-    const endDate = new Date(end_date);
-
-    // Consultar las actividades del estudiante
-    const activityStudent = await ActivitiesStudentsModel.findOne({
-      student: student_id,
-      activity: activity_id
-    }).lean();
-
-    if (!activityStudent) {
-      return res.status(404).json({ message: 'No se encontró la actividad para el estudiante especificado.' });
-    }
-
-    // Consultar la asistencia del estudiante en el rango de fechas especificado
-    const attendances = await AttendanceModel.find({
-      'activities_student.student': student_id,
-      'activities_student.activity': activity_id,
-      date: { $gte: startDate, $lte: endDate } 
-    });
-    
-    res.status(200).json(attendances);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
-  }
-};
-
 
 
 export const getAttendanceByActivitiesStudentInDateRange = async (req, res) => {
@@ -114,73 +83,6 @@ export const getAttendanceByActivitiesStudentInDateRange = async (req, res) => {
   }
 };
 
-// Controlador para obtener la asistencia de un estudiante en un rango de fechas
-export const getAttendancesByStudentAndDateRange = async (req, res) => {
-  try {
-    const { student, start_date, end_date } = req.params;
-
-    // Convertir las fechas a objetos Date
-    const startDate = new Date(start_date);
-    const endDate = new Date(end_date);
-
-    // Consultar la asistencia del estudiante en el rango de fechas especificado
-    const attendance = await AttendanceModel.find({
-      activities_student: student,
-      date: { $gte: startDate, $lte: endDate } 
-    }).populate({
-      path: 'activities_student',
-      populate: {
-        path: 'student', 
-        model: 'students' 
-      }
-    }).populate({
-      path: 'activities_student',
-      populate: {
-        path: 'activity', // 
-        model: 'activities' 
-      }
-    });
-
-    res.status(200).json(attendances);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
-  }
-};
-
-
-//get para la asistencia de un estudiante específico para una actividad en particular en un rango de fechas dado. 
-const getAttendanceForStudentAndActivity = async (studentId, activityId) => {
-  try {
-      // Realiza la consulta para buscar los registros de asistencia que coincidan con el id del estudiante y el id de la actividad
-      const attendance = await AttendanceModel.find({ 
-          activities_student: studentId, 
-          activity: activityId 
-      });
-      
-      return attendance; // Devuelve los registros de asistencia encontrados
-  } catch (error) {
-      throw new Error('Error fetching attendance for student and activity');
-  }
-};
-
-
-
-// Controlador para Obtener Asistencia por Actividad
-export const getAttendancesByActivity = async (req, res) => {
-  try {
-    const { activity_id } = req.params;
-    const attendances = await AttendanceModel.find({ 'activities_student.activity': activity_id })
-      .populate({
-        path: 'activities_student',
-        populate: { path: 'student', model: 'students' }
-      });
-
-    res.status(200).json(attendances);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 
 // Controlador para obtener estudiantes y su asistencia por actividad y fecha específica
