@@ -3,7 +3,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
-import loginRoutes from './routes/loginRoutes.js';
+import loginRoutes from './routes/LoginRoutes.js';
 import activitiesRouter from './routes/ActivitiesRoutes.js';
 import categoryRoutes from './routes/CategoriesRoutes.js';
 import centerRoutes from './routes/CenterRoutes.js'
