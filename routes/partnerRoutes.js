@@ -3,14 +3,11 @@ import { createPartner, getPartners, getPartnerById, updatePartnerById, deletePa
 
 const router = express.Router();
 
-router.post('/partners', createPartner);
-
-router.get('/partners', getPartners);
-
-router.get('/partners/:id', getPartnerById);
-
-router.put('/partners/:id', updatePartnerById);
-
-router.delete('/partners/:id', deletePartnerById);
+router.post('/', createPartner);
+router.get('/', getPartners);
+router.get('/:id', getPartnerById);
+router.put('/:id', updatePartnerById);
+router.delete('/:id', deletePartnerById);
 
 export default router;
+

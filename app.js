@@ -1,18 +1,25 @@
 import './database/db.js';
 import express from 'express';
 import dotenv from 'dotenv';
-import userRoutes from './routes/UserRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
-import loginRoutes from './routes/LoginRoutes.js';
+import loginRoutes from './routes/loginRoutes.js';
 import activitiesRouter from './routes/ActivitiesRoutes.js';
 import categoryRoutes from './routes/CategoriesRoutes.js';
 import centerRoutes from './routes/CenterRoutes.js'
 import studentsRoutes from './routes/StudentsRoutes.js'
-import rateRoutes from './routes/RateRoutes.js'
 import roleRoutes from './routes/RoleRoutes.js'
+import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
+import rateRoutes from './routes/RateRoutes.js'
+import ScheduleDaysModel from "./models/ScheduleDaysModel.js";
+import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
+import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
+import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js"
+import attendanceRoutes from './routes/attendanceRoutes.js'
+import breakfastRoutes from './routes/breakfastRoutes.js'
 import cors from 'cors';
 import nodemailer from 'nodemailer';
-
+import mongoose from 'mongoose';
 
 
 dotenv.config();
@@ -28,13 +35,24 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', userRoutes);
+// Registrar el modelo ScheduleDaysModel y ScheduleHoursModel
+mongoose.model("schedule_days", ScheduleDaysModel.schema);
+mongoose.model("schedule_hours", ScheduleHoursModel.schema);
+
+
+
+app.use("/", userRoutes);
 app.use('/api/partners', partnerRoutes);
-app.use('/', loginRoutes);
-app.use('/', studentsRoutes);
-app.use('/api/activities', activitiesRouter);
-app.use('/', categoryRoutes);
-app.use('/', centerRoutes);
+app.use("/", loginRoutes);
+app.use("/api/students", studentsRoutes); 
+app.use("/api/categories", categoryRoutes);
+app.use("/api", centerRoutes);
+app.use("/api/activities", activitiesRouter);
+app.use("/api/scheduleDays", scheduleDaysRouter);
+app.use("/api/scheduleHours", scheduleHoursRouter);
+app.use("/api/activitiesStudents", activitiesStudentsRouter);
+app.use("/", breakfastRoutes);
+app.use("/api", attendanceRoutes);
 app.use('/rate', rateRoutes);
 app.use('/', roleRoutes);
 
@@ -92,8 +110,6 @@ app.post("/send_recovery_email", (req, res) => {
 });
 
 
-// Puerto en el que se ejecutará el servidor
-//const PORT = process.env.PORT ?? 3000;
 
 // Iniciar el servidor
 app.listen(PORT, () => {
