@@ -1,5 +1,6 @@
 import UserModel from '../models/UsersModel.js';
 import RoleModel from '../models/RoleModel.js';
+import PartnerModel from '../models/PartnerModel.js';
 import bcrypt from 'bcrypt';
 import { passwordGenerated } from '../utils/passwordGenerator.js';
 import { sendEmailClient } from '../utils/sendMail.js';
@@ -8,42 +9,57 @@ const { SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION } = process.en
 
 // Controlador para crear un nuevo usuario
 export const createUser = async (req, res) => {
-    try {
-      const { username, email, roleName, lastname, name } = req.body;
+  try {
+    const { username, email, roleName, lastname, name, phone_number, partner_number } = req.body;
 
-      // Verificar si el usuario ya existe
-      const existingUser = await UserModel.findOne({ username });
-      if (existingUser) {
-        return res.status(400).json({ message: 'El nombre de usuario ya está en uso' });
-      }
-
-      // Obtener el rol
-      const role = await RoleModel.findOne({ name: roleName });
-      if (!role) {
-        return res.status(400).json({ message: 'El rol proporcionado no existe' });
-      }
-  
-      // Generar y cifrar la contraseña
-      let password = passwordGenerated();
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      // Crear un nuevo usuario con la contraseña cifrada y el rol
-      const newUser = new UserModel({
-        username,
-        password: hashedPassword,
-        email,
-        role: role._id, // Asignar el ObjectId del rol
-        lastname,
-        name
-      });
-  
-      // Guardar el nuevo usuario en la base de datos
-      const savedUser = await newUser.save();
-      sendEmailClient(SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION, email, password);
-      res.status(201).json(savedUser);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+    // Verificar si el usuario ya existe
+    const existingUser = await UserModel.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'El nombre de usuario ya está en uso' });
     }
+
+    // Obtener el rol
+    const role = await RoleModel.findOne({ name: roleName });
+    if (!role) {
+      return res.status(400).json({ message: 'El rol proporcionado no existe' });
+    }
+
+    // Generar y cifrar la contraseña
+    let password = passwordGenerated();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear un nuevo usuario con la contraseña cifrada y el rol
+    const newUser = new UserModel({
+      username,
+      password: hashedPassword,
+      email,
+      role: role._id, // Asignar el ObjectId del rol
+      lastname,
+      name
+    });
+
+    // Guardar el nuevo usuario en la base de datos
+    const savedUser = await newUser.save();
+
+    // Si el rol es "partner", crear una entrada en la colección `partners`
+    if (roleName === 'partner') {
+      const newPartner = new PartnerModel({
+        partner_number,
+        phone_number,
+        user_id: savedUser._id
+      });
+
+      await newPartner.save();
+    }
+
+    // Enviar correo electrónico con la contraseña generada
+    sendEmailClient(SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION, email, password);
+
+    // Enviar la respuesta con el usuario y la contraseña generada // SOLO PRUEBAS --- ELIMINAR EL PASSWORD de la LINEA 59
+    res.status(201).json({ user: savedUser, password });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 // Controlador para obtener todos los usuarios
@@ -60,6 +76,7 @@ export const getUsers = async (req, res) => {
 export const getUsersByRole = async (req, res) => {
   try {
     const { roleName } = req.params;
+    console.log(`Buscando usuarios con rol: ${roleName}`);
 
     // Obtener el rol por su nombre
     const role = await RoleModel.findOne({ name: roleName });
@@ -69,8 +86,10 @@ export const getUsersByRole = async (req, res) => {
 
     // Obtener los usuarios con el rol especificado
     const users = await UserModel.find({ role: role._id }).populate('role');
+    console.log(`Usuarios encontrados: ${users.length}`);
     res.status(200).json(users);
   } catch (error) {
+    console.error('Error al obtener usuarios por rol:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -105,6 +124,16 @@ export const updateUserById = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
+
+    // Actualizar la colección de `partners` si el rol es "partner"
+    if (roleName === 'partner') {
+      await PartnerModel.findOneAndUpdate(
+        { user_id: updatedUser._id },
+        { phone_number: req.body.phone_number, partner_number: req.body.partner_number },
+        { new: true }
+      );
+    }
+
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -118,6 +147,13 @@ export const deleteUserById = async (req, res) => {
     if (!deletedUser) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
+
+    // Eliminar de la colección de `partners` si el rol es "partner"
+    const userRole = await RoleModel.findById(deletedUser.role);
+    if (userRole.name === 'partner') {
+      await PartnerModel.findOneAndDelete({ user_id: deletedUser._id });
+    }
+
     res.status(200).json({ message: 'Usuario eliminado correctamente' });
   } catch (error) {
     res.status(500).json({ message: error.message });

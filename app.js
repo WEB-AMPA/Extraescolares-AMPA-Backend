@@ -6,57 +6,53 @@ import partnerRoutes from './routes/partnerRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
 import activitiesRouter from './routes/ActivitiesRoutes.js';
 import categoryRoutes from './routes/CategoriesRoutes.js';
-import centerRoutes from './routes/CenterRoutes.js'
-import studentsRoutes from './routes/StudentsRoutes.js'
-import roleRoutes from './routes/RoleRoutes.js'
-import activitiesStudentsRouter from "./routes/ActivitiesStudentsRoutes.js";
-import ScheduleDaysModel from "./models/ScheduleDaysModel.js";
-import ScheduleHoursModel from "./models/ScheduleHoursModel.js";
-import scheduleDaysRouter from "./routes/ScheduleDaysRoutes.js";
-import scheduleHoursRouter from "./routes/ScheduleHoursRoutes.js"
-import attendanceRoutes from './routes/attendanceRoutes.js'
-import breakfastRoutes from './routes/breakfastRoutes.js'
+import centerRoutes from './routes/CenterRoutes.js';
+import studentsRoutes from './routes/StudentsRoutes.js';
+import roleRoutes from './routes/RoleRoutes.js';
+import activitiesStudentsRouter from './routes/ActivitiesStudentsRoutes.js';
+import scheduleDaysRouter from './routes/ScheduleDaysRoutes.js';
+import scheduleHoursRouter from './routes/ScheduleHoursRoutes.js';
+import attendanceRoutes from './routes/attendanceRoutes.js';
+import breakfastRoutes from './routes/breakfastRoutes.js';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
-import mongoose from 'mongoose';
-
+import { authenticate, authorize } from './middlewares/authMiddleware.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-app.use(express.json({ limit: "25mb" }));
+app.use(express.json({ limit: '25mb' }));
 app.use(cors());
-app.use(express.urlencoded({ limit: "25mb" }));
+app.use(express.urlencoded({ limit: '25mb' }));
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
 
-// Registrar el modelo ScheduleDaysModel y ScheduleHoursModel
-mongoose.model("schedule_days", ScheduleDaysModel.schema);
-mongoose.model("schedule_hours", ScheduleHoursModel.schema);
+// Rutas no protegidas
+app.use('/api/login', loginRoutes);
 
-app.use('/api/users', userRoutes);
-app.use('/api/partners', partnerRoutes);
-app.use("/", loginRoutes);
-app.use("/api/students", studentsRoutes); 
-app.use("/api/categories", categoryRoutes);
-app.use("/api", centerRoutes);
-app.use("/api/activities", activitiesRouter);
-app.use("/api/scheduleDays", scheduleDaysRouter);
-app.use("/api/scheduleHours", scheduleHoursRouter);
-app.use("/api/activitiesStudents", activitiesStudentsRouter);
-app.use("/", breakfastRoutes);
-app.use("/api", attendanceRoutes);
-app.use('/', roleRoutes);
+// Rutas protegidas
+app.use('/api/users', authenticate, authorize(['admin']), userRoutes);
+app.use('/api/partners', authenticate, authorize(['admin']), partnerRoutes);
+app.use('/api/students', authenticate, authorize(['admin']), studentsRoutes);
+app.use('/api/categories', authenticate, authorize(['admin']), categoryRoutes);
+app.use('/api/centers', authenticate, authorize(['admin']), centerRoutes);
+app.use('/api/activities', authenticate, authorize(['admin']), activitiesRouter);
+app.use('/api/scheduleDays', authenticate, authorize(['admin']), scheduleDaysRouter);
+app.use('/api/scheduleHours', authenticate, authorize(['admin']), scheduleHoursRouter);
+app.use('/api/activitiesStudents', authenticate, authorize(['admin']), activitiesStudentsRouter);
+app.use('/api/breakfast', authenticate, authorize(['admin']), breakfastRoutes);
+app.use('/api/attendance', authenticate, authorize(['admin']), attendanceRoutes);
+app.use('/api/roles', authenticate, authorize(['admin']), roleRoutes);
 
-// Function to send email
 function sendEmail({ recipient_email, OTP }) {
   return new Promise((resolve, reject) => {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: process.env.MY_EMAIL,
         pass: process.env.MY_PASSWORD,
@@ -66,7 +62,7 @@ function sendEmail({ recipient_email, OTP }) {
     const mail_configs = {
       from: process.env.MY_EMAIL,
       to: recipient_email,
-      subject: "KODING 101 PASSWORD RECOVERY",
+      subject: 'KODING 101 PASSWORD RECOVERY',
       html: `
         <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
           <div style="margin:50px auto;width:70%;padding:20px 0">
@@ -98,14 +94,14 @@ function sendEmail({ recipient_email, OTP }) {
   });
 }
 
-// Routes for email recovery
-app.post("/send_recovery_email", (req, res) => {
+app.post('/send_recovery_email', (req, res) => {
   sendEmail(req.body)
-    .then(response => res.send(response.message))
-    .catch(error => res.status(500).send(error.message));
+    .then((response) => res.send(response.message))
+    .catch((error) => res.status(500).send(error.message));
 });
 
-// Iniciar el servidor
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

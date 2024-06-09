@@ -5,21 +5,15 @@ import UserModel from '../models/UsersModel.js';
 // Controlador para iniciar sesión
 export const loginUser = async (req, res) => {
   try {
-    const { credential, password } = req.body;
+    const { username, password } = req.body;
 
     // Validar si se proporcionan las credenciales
-    if (!credential || !password) {
+    if (!username || !password) {
       return res.status(400).json({ message: 'Por favor, proporcione credenciales válidas.' });
     }
 
-    // Buscar al usuario por número de socio, correo electrónico o nombre de usuario en la base de datos
-    const user = await UserModel.findOne({
-      $or: [
-        { partner_number: credential },
-        { email: credential },
-        { username: credential }
-      ]
-    });
+    // Buscar al usuario por nombre de usuario en la base de datos
+    const user = await UserModel.findOne({ username });
 
     // Si no se encuentra al usuario, devolver un error
     if (!user) {
@@ -41,8 +35,6 @@ export const loginUser = async (req, res) => {
       maxAge: 3600000 // en una hora la cookie se eliminará
     });
 
-
-    
     // Devolver el token como respuesta
     res.status(200).json({ token, role: user.role });
   } catch (error) {

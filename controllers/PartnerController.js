@@ -1,6 +1,5 @@
 import PartnerModel from '../models/PartnerModel.js';
 import UserModel from '../models/UsersModel.js';
-import StudentModel from '../models/StudentModels.js';
 import bcrypt from 'bcrypt';
 
 // ID del rol de partner
