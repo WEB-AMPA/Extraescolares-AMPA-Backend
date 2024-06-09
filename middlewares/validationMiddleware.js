@@ -6,10 +6,8 @@ const userSchema = Joi.object({
   roleName: Joi.string().required(),
   lastname: Joi.string().required(),
   name: Joi.string().required(),
-});
-
-const categorySchema = Joi.object({
-  name: Joi.string().required(),
+  phone_number: Joi.string().required(),
+  partner_number: Joi.number().required()
 });
 
 export const validateUser = (req, res, next) => {
