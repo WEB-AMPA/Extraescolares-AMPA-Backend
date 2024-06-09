@@ -7,7 +7,8 @@ const userSchema = new Schema({
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   role: { type: Schema.Types.ObjectId, ref: 'roles', required: true },
-  name: { type: String, required: true }
+  name: { type: String, required: true },
+  partner_number: { type: Number, unique: true, sparse: true }, // Solo para partners
 });
 
 const UserModel = mongoose.model('users', userSchema);

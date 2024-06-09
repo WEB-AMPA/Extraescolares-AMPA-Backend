@@ -2,7 +2,6 @@ import './database/db.js';
 import express from 'express';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
-import partnerRoutes from './routes/partnerRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
 import activitiesRouter from './routes/ActivitiesRoutes.js';
 import categoryRoutes from './routes/CategoriesRoutes.js';
@@ -37,7 +36,6 @@ app.use('/api/login', loginRoutes);
 
 // Rutas protegidas
 app.use('/api/users', authenticate, authorize(['admin']), userRoutes);
-app.use('/api/partners', authenticate, authorize(['admin']), partnerRoutes);
 app.use('/api/students', authenticate, authorize(['admin']), studentsRoutes);
 app.use('/api/categories', authenticate, authorize(['admin']), categoryRoutes);
 app.use('/api/centers', authenticate, authorize(['admin']), centerRoutes);

@@ -1,6 +1,5 @@
 import UserModel from '../models/UsersModel.js';
 import RoleModel from '../models/RoleModel.js';
-import PartnerModel from '../models/PartnerModel.js';
 import bcrypt from 'bcrypt';
 import { passwordGenerated } from '../utils/passwordGenerator.js';
 import { sendEmailClient } from '../utils/sendMail.js';
@@ -35,27 +34,18 @@ export const createUser = async (req, res) => {
       email,
       role: role._id, // Asignar el ObjectId del rol
       lastname,
-      name
+      name,
+      phone_number,
+      partner_number: roleName === 'partner' ? partner_number : undefined, // Asignar partner_number solo si el rol es 'partner'
     });
 
     // Guardar el nuevo usuario en la base de datos
     const savedUser = await newUser.save();
 
-    // Si el rol es "partner", crear una entrada en la colección `partners`
-    if (roleName === 'partner') {
-      const newPartner = new PartnerModel({
-        partner_number,
-        phone_number,
-        user_id: savedUser._id
-      });
-
-      await newPartner.save();
-    }
-
     // Enviar correo electrónico con la contraseña generada
     sendEmailClient(SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION, email, password);
 
-    // Enviar la respuesta con el usuario y la contraseña generada // SOLO PRUEBAS --- ELIMINAR EL PASSWORD de la LINEA 59
+    // Enviar la respuesta con el usuario y la contraseña generada
     res.status(201).json({ user: savedUser, password });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -125,15 +115,6 @@ export const updateUserById = async (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // Actualizar la colección de `partners` si el rol es "partner"
-    if (roleName === 'partner') {
-      await PartnerModel.findOneAndUpdate(
-        { user_id: updatedUser._id },
-        { phone_number: req.body.phone_number, partner_number: req.body.partner_number },
-        { new: true }
-      );
-    }
-
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -148,14 +129,9 @@ export const deleteUserById = async (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // Eliminar de la colección de `partners` si el rol es "partner"
-    const userRole = await RoleModel.findById(deletedUser.role);
-    if (userRole.name === 'partner') {
-      await PartnerModel.findOneAndDelete({ user_id: deletedUser._id });
-    }
-
     res.status(200).json({ message: 'Usuario eliminado correctamente' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
