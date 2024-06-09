@@ -1,12 +1,13 @@
 import express from 'express';
 import scheduleDaysController from '../controllers/ScheduleDaysController.js';
+import { authenticate, authorize } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/scheduleDays', scheduleDaysController.createScheduleDay); // POST route
-router.get('/scheduleDays', scheduleDaysController.getAllScheduleDays); // GET all route
-router.get('/scheduleDays/:id', scheduleDaysController.getScheduleDayById); // GET by ID route
-router.put('/scheduleDays/:id', scheduleDaysController.updateScheduleDayById); // PUT route
-router.delete('/scheduleDays/:id', scheduleDaysController.deleteScheduleDayById); // DELETE route
+router.post('/', authenticate, authorize(['admin']), scheduleDaysController.createScheduleDay);
+router.get('/', authenticate, authorize(['admin']), scheduleDaysController.getAllScheduleDays);
+router.get('/:id', authenticate, authorize(['admin']), scheduleDaysController.getScheduleDayById);
+router.put('/:id', authenticate, authorize(['admin']), scheduleDaysController.updateScheduleDayById);
+router.delete('/:id', authenticate, authorize(['admin']), scheduleDaysController.deleteScheduleDayById);
 
 export default router;

@@ -44,8 +44,8 @@ app.use('/api/centers', authenticate, authorize(['admin']), centerRoutes);
 app.use('/api/activities', authenticate, authorize(['admin']), activitiesRouter);
 app.use('/api/scheduleDays', authenticate, authorize(['admin']), scheduleDaysRouter);
 app.use('/api/scheduleHours', authenticate, authorize(['admin']), scheduleHoursRouter);
-app.use('/api/activitiesStudents', authenticate, authorize(['admin']), activitiesStudentsRouter);
-app.use('/api/breakfast', authenticate, authorize(['admin']), breakfastRoutes);
+app.use('/api/activitiesStudents', authenticate, authorize(['admin', 'monitor']), activitiesStudentsRouter);
+app.use('/api/breakfast', authenticate, authorize(['admin', 'coordinator']), breakfastRoutes);
 app.use('/api/attendance', authenticate, authorize(['admin']), attendanceRoutes);
 app.use('/api/roles', authenticate, authorize(['admin']), roleRoutes);
 

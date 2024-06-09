@@ -4,7 +4,6 @@ class ScheduleDaysController {
     async createScheduleDay(req, res) {
         try {
             const { days } = req.body;
-
             const newScheduleDay = new ScheduleDaysModel({ days });
             const savedScheduleDay = await newScheduleDay.save();
             res.status(201).json(savedScheduleDay);
@@ -42,7 +41,6 @@ class ScheduleDaysController {
         try {
             const { id } = req.params;
             const { days } = req.body;
-
             const updatedScheduleDay = await ScheduleDaysModel.findByIdAndUpdate(id, { days }, { new: true });
             if (!updatedScheduleDay) {
                 return res.status(404).json({ message: 'Día de horario no encontrado.' });
