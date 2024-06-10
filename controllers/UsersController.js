@@ -45,7 +45,7 @@ export const createUser = async (req, res) => {
     // Enviar correo electrónico con la contraseña generada
     sendEmailClient(SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION, email, password);
 
-    // Enviar la respuesta con el usuario y la contraseña generada
+    // Enviar la respuesta con el usuario --- ELIMINAR password , esta puesto solo para PRUEBAS
     res.status(201).json({ user: savedUser, password });
   } catch (error) {
     res.status(400).json({ message: error.message });
