@@ -52,20 +52,25 @@ export const createUser = async (req, res) => {
   }
 };
 
+// Controlador para obtener todos los usuarios
 export const getUsers = async (req, res) => {
   try {
-    const users = await UserModel.find().populate('role');
-    const page =  parseInt(req.params.page) || 1
-    const pageSize  = parseInt(req.query.pageSize ) || 10;
+    const page = parseInt(req.params.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
     const role = req.query.role;
 
-    const skip = (page - 1) * pageSize
-    const limit = pageSize
+    const skip = (page - 1) * pageSize;
+    const limit = pageSize;
 
-    const query ={}
+    const query = {};
 
     if (role) {
-      query['role.name'] = role;
+      const roleData = await RoleModel.findOne({ name: role });
+      if (roleData) {
+        query.role = roleData._id;
+      } else {
+        return res.status(400).json({ message: 'El rol proporcionado no existe' });
+      }
     }
 
     const users = await UserModel.aggregate([
@@ -185,9 +190,14 @@ export const deleteUserById = async (req, res) => {
 // Controlador para obtener todos los socios con sus estudiantes
 export const getPartnersWithStudents = async (req, res) => {
   try {
-    const partners = await UserModel.find({ role: 'partner' }).populate('student_id');
+    const role = await RoleModel.findOne({ name: 'partner' });
+    if (!role) {
+      return res.status(400).json({ message: 'El rol de socio no existe' });
+    }
+    const partners = await UserModel.find({ role: role._id }).populate('student_id');
     res.status(200).json(partners);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
