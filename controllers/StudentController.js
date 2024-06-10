@@ -1,7 +1,6 @@
 import StudentModel from '../models/StudentModels.js';
 import Center from '../models/CentersModel.js';
-import PartnerModel from '../models/PartnerModel.js';
-import ActivitiesStudentsModel from '../models/ActivitiesStudentsModel.js';
+import UserModel from '../models/UsersModel.js';
 
 class StudentsController {
   async createStudent(req, res) {
@@ -14,8 +13,8 @@ class StudentsController {
         return res.status(400).json({ message: 'El centro proporcionado no existe.' });
       }
 
-      // Buscar el socio por su número de socio
-      const partner = await PartnerModel.findOne({ partner_number });
+      // Buscar el socio en la colección de usuarios por su número de socio
+      const partner = await UserModel.findOne({ partner_number });
       if (!partner) {
         return res.status(400).json({ message: 'El socio proporcionado no existe.' });
       }
@@ -27,13 +26,16 @@ class StudentsController {
         breakfast,
         observations,
         course,
-        partner: partner._id, 
-        center: center._id 
+        partner: partner._id, // Guarda el ObjectId del socio en el estudiante
+        center: center._id // Asignar el ObjectId del centro
       });
 
       const savedStudent = await newStudent.save();
 
       // Agregar el estudiante al socio correspondiente
+      if (!partner.students) {
+        partner.students = [];
+      }
       partner.students.push(savedStudent._id);
       await partner.save();
 
@@ -46,7 +48,7 @@ class StudentsController {
 
   async getAllStudents(req, res) {
     try {
-      const students = await StudentModel.find().populate('center').populate('partner');
+      const students = await StudentModel.find().populate('center partner');
       res.status(200).json(students);
     } catch (error) {
       console.error(error);
@@ -56,7 +58,7 @@ class StudentsController {
 
   async getStudentById(req, res) {
     try {
-      const student = await StudentModel.findById(req.params.id).populate('center').populate('partner');
+      const student = await StudentModel.findById(req.params.id).populate('center partner');
       if (!student) {
         return res.status(404).json({ message: 'Estudiante no encontrado.' });
       }
@@ -77,8 +79,8 @@ class StudentsController {
         return res.status(400).json({ message: 'El centro proporcionado no existe.' });
       }
 
-      // Buscar el socio por su número de socio
-      const partner = await PartnerModel.findOne({ partner_number });
+      // Buscar el socio en la colección de usuarios por su número de socio
+      const partner = await UserModel.findOne({ partner_number });
       if (!partner) {
         return res.status(400).json({ message: 'El socio proporcionado no existe.' });
       }
@@ -87,7 +89,7 @@ class StudentsController {
         req.params.id,
         { name, lastname, breakfast, observations, course, partner: partner._id, center: center._id },
         { new: true }
-      ).populate('center').populate('partner');
+      ).populate('center partner');
 
       if (!updatedStudent) {
         return res.status(404).json({ message: 'Estudiante no encontrado.' });
@@ -114,14 +116,11 @@ class StudentsController {
       }
 
       // Eliminar el estudiante de la lista de estudiantes del socio
-      const partner = await PartnerModel.findOne({ _id: deletedStudent.partner });
+      const partner = await UserModel.findOne({ partner_number: deletedStudent.partner_number });
       if (partner) {
         partner.students.pull(deletedStudent._id);
         await partner.save();
       }
-
-      // Eliminar las asignaciones de actividades del estudiante
-      await ActivitiesStudentsModel.deleteMany({ student: deletedStudent._id });
 
       res.status(200).json({ message: 'Estudiante eliminado exitosamente.' });
     } catch (error) {
@@ -133,7 +132,7 @@ class StudentsController {
   // Obtener todos los estudiantes que tienen el desayuno habilitado
   async getStudentsWithBreakfast(req, res) {
     try {
-      const students = await StudentModel.find({ breakfast: true }).populate('center').populate('partner');
+      const students = await StudentModel.find({ breakfast: true });
       res.status(200).json(students);
     } catch (error) {
       console.error(error);
@@ -143,3 +142,4 @@ class StudentsController {
 }
 
 export default new StudentsController();
+

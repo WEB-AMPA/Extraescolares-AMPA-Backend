@@ -8,7 +8,7 @@ const studentSchema = new Schema({
   breakfast: { type: Boolean },
   observations: { type: String },
   course: { type: String, required: true },
-  partner: { type: Schema.Types.ObjectId, ref: 'partners', required: true }, 
+  partner: { type: Schema.Types.ObjectId, ref: 'users', required: true },
   center: { type: Schema.Types.ObjectId, ref: 'centers', required: true },
   activities: [{
     activity: { type: Schema.Types.ObjectId, ref: 'activities' },
@@ -22,3 +22,5 @@ const studentSchema = new Schema({
 const StudentModel = mongoose.model('students', studentSchema);
 
 export default StudentModel;
+
+

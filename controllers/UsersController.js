@@ -36,7 +36,7 @@ export const createUser = async (req, res) => {
       lastname,
       name,
       phone_number,
-      partner_number: roleName === 'partner' ? partner_number : undefined, // Asignar partner_number solo si el rol es 'partner'
+      partner_number: roleName === 'partner' ? partner_number : undefined
     });
 
     // Guardar el nuevo usuario en la base de datos
@@ -135,3 +135,12 @@ export const deleteUserById = async (req, res) => {
   }
 };
 
+// Controlador para obtener todos los socios con sus estudiantes
+export const getPartnersWithStudents = async (req, res) => {
+  try {
+    const partners = await UserModel.find({ role: 'partner' }).populate('student_id');
+    res.status(200).json(partners);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

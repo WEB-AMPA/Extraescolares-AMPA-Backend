@@ -22,12 +22,7 @@ router.get("/", authenticate, authorize(["admin"]), getUsers);
 router.get("/:id", authenticate, authorize(["admin"]), getUserById);
 
 // Obtener usuarios por rol (accesible por admin)
-router.get(
-  "/role/:roleName",
-  authenticate,
-  authorize(["admin"]),
-  getUsersByRole
-);
+router.get("/role/:roleName", authenticate, authorize(["admin"]), getUsersByRole);
 
 // Actualizar un usuario por su ID (solo accesible por admin)
 router.put("/:id", authenticate, authorize(["admin"]), updateUserById);
@@ -36,3 +31,4 @@ router.put("/:id", authenticate, authorize(["admin"]), updateUserById);
 router.delete("/:id", authenticate, authorize(["admin"]), deleteUserById);
 
 export default router;
+
