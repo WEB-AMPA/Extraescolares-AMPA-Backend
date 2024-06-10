@@ -8,7 +8,7 @@ const { SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION} = process.env
 // Controlador para crear un nuevo usuario
 export const createUser = async (req, res) => {
     try {
-      const { username, email, role, lastname, name } = req.body;
+      const { username, email, role, name } = req.body;
 
       // Verificar si el usuario ya existe
       const existingUser = await UserModel.findOne({ username });
@@ -29,7 +29,7 @@ export const createUser = async (req, res) => {
         password: hashedPassword,
         email,
         role,
-        lastname,
+        // lastname,
         name
       });
   
@@ -42,11 +42,53 @@ export const createUser = async (req, res) => {
     }
   };
 
-// Controlador para obtener todos los usuarios
 export const getUsers = async (req, res) => {
   try {
-    const users = await UserModel.find();
-    res.status(200).json(users);
+    const page =  parseInt(req.params.page) || 1
+    const pageSize  = parseInt(req.query.pageSize ) || 10;
+    const role = req.query.role;
+
+    const skip = (page - 1) * pageSize
+    const limit = pageSize
+
+    const query ={}
+
+    if (role) {
+      query['role.name'] = role;
+    }
+
+    const users = await UserModel.aggregate([
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'role'
+        }
+      },
+      {
+        $unwind: '$role'
+      },
+      {
+        $match: query
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      }
+    ]);
+
+    const totalUsers = await UserModel.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
+    res.status(200).json({
+      users,
+      totalPages,
+      currentPage: page,
+      pageSize
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
