@@ -35,7 +35,7 @@ export const createUser = async (req, res) => {
       role: role._id, // Asignar el ObjectId del rol
       lastname,
       name,
-      phone_number,
+      phone_number: roleName === 'partner' ? phone_number : undefined,
       partner_number: roleName === 'partner' ? partner_number : undefined
     });
 
@@ -108,6 +108,10 @@ export const updateUserById = async (req, res) => {
         return res.status(400).json({ message: 'El rol proporcionado no existe' });
       }
       updateData.role = role._id;
+      if (roleName === 'partner') {
+        updateData.phone_number = req.body.phone_number;
+        updateData.partner_number = req.body.partner_number;
+      }
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, updateData, { new: true }).populate('role');
