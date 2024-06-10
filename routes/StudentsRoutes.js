@@ -1,17 +1,14 @@
 import express from 'express';
 import studentsController from '../controllers/StudentController.js';
+import { authenticate, authorize } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', studentsController.createStudent);
-router.get('/', studentsController.getAllStudents);
-
-router.get('/:id', studentsController.getStudentById);
-router.put('/:id', studentsController.updateStudent);
-router.delete('/:id', studentsController.deleteStudent);
-router.get('/withbreakfast', studentsController.getStudentsWithBreakfast);
-
-
+router.post('/', authenticate, authorize(['admin']), studentsController.createStudent);
+router.get('/', authenticate, authorize(['admin']), studentsController.getAllStudents);
+router.get('/withbreakfast', authenticate, authorize(['admin','coordinator' ]), studentsController.getStudentsWithBreakfast);
+router.get('/:id', authenticate, authorize(['admin']), studentsController.getStudentById);
+router.put('/:id', authenticate, authorize(['admin']), studentsController.updateStudent);
+router.delete('/:id', authenticate, authorize(['admin']), studentsController.deleteStudent);
 
 export default router;
-

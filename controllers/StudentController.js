@@ -1,6 +1,7 @@
 import StudentModel from '../models/StudentModels.js';
 import Center from '../models/CentersModel.js';
 import PartnerModel from '../models/PartnerModel.js';
+import ActivitiesStudentsModel from '../models/ActivitiesStudentsModel.js';
 
 class StudentsController {
   async createStudent(req, res) {
@@ -26,14 +27,14 @@ class StudentsController {
         breakfast,
         observations,
         course,
-        partner_number, // Guarda el número de socio en el estudiante
-        center: center._id // Asignar el ObjectId del centro
+        partner: partner._id, 
+        center: center._id 
       });
 
       const savedStudent = await newStudent.save();
 
       // Agregar el estudiante al socio correspondiente
-      partner.student_id.push(savedStudent._id);
+      partner.students.push(savedStudent._id);
       await partner.save();
 
       res.status(201).json(savedStudent);
@@ -45,7 +46,7 @@ class StudentsController {
 
   async getAllStudents(req, res) {
     try {
-      const students = await StudentModel.find().populate('center');
+      const students = await StudentModel.find().populate('center').populate('partner');
       res.status(200).json(students);
     } catch (error) {
       console.error(error);
@@ -55,7 +56,7 @@ class StudentsController {
 
   async getStudentById(req, res) {
     try {
-      const student = await StudentModel.findById(req.params.id).populate('center');
+      const student = await StudentModel.findById(req.params.id).populate('center').populate('partner');
       if (!student) {
         return res.status(404).json({ message: 'Estudiante no encontrado.' });
       }
@@ -84,17 +85,17 @@ class StudentsController {
 
       const updatedStudent = await StudentModel.findByIdAndUpdate(
         req.params.id,
-        { name, lastname, breakfast, observations, course, partner_number, center: center._id },
+        { name, lastname, breakfast, observations, course, partner: partner._id, center: center._id },
         { new: true }
-      ).populate('center');
+      ).populate('center').populate('partner');
 
       if (!updatedStudent) {
         return res.status(404).json({ message: 'Estudiante no encontrado.' });
       }
 
       // Actualizar la lista de estudiantes del socio
-      if (!partner.student_id.includes(updatedStudent._id)) {
-        partner.student_id.push(updatedStudent._id);
+      if (!partner.students.includes(updatedStudent._id)) {
+        partner.students.push(updatedStudent._id);
         await partner.save();
       }
 
@@ -113,11 +114,14 @@ class StudentsController {
       }
 
       // Eliminar el estudiante de la lista de estudiantes del socio
-      const partner = await PartnerModel.findOne({ partner_number: deletedStudent.partner_number });
+      const partner = await PartnerModel.findOne({ _id: deletedStudent.partner });
       if (partner) {
-        partner.student_id.pull(deletedStudent._id);
+        partner.students.pull(deletedStudent._id);
         await partner.save();
       }
+
+      // Eliminar las asignaciones de actividades del estudiante
+      await ActivitiesStudentsModel.deleteMany({ student: deletedStudent._id });
 
       res.status(200).json({ message: 'Estudiante eliminado exitosamente.' });
     } catch (error) {
@@ -129,7 +133,7 @@ class StudentsController {
   // Obtener todos los estudiantes que tienen el desayuno habilitado
   async getStudentsWithBreakfast(req, res) {
     try {
-      const students = await StudentModel.find({ breakfast: true });
+      const students = await StudentModel.find({ breakfast: true }).populate('center').populate('partner');
       res.status(200).json(students);
     } catch (error) {
       console.error(error);
