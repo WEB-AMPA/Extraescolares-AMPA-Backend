@@ -34,8 +34,8 @@ export const createUser = async (req, res) => {
       role: role._id, // Asignar el ObjectId del rol
       lastname,
       name,
-      phone_number,
-      partner_number: roleName === 'partner' ? partner_number : undefined, // Asignar partner_number solo si el rol es 'partner'
+      phone_number: roleName === 'partner' ? phone_number : undefined,
+      partner_number: roleName === 'partner' ? partner_number : undefined
     });
 
     // Guardar el nuevo usuario en la base de datos
@@ -44,7 +44,7 @@ export const createUser = async (req, res) => {
     // Enviar correo electrónico con la contraseña generada
     sendEmailClient(SMTP_EMAIL, PORT_EMAIL, SERVER_EMAIL, PASSWORD_APLICATION, email, password);
 
-    // Enviar la respuesta con el usuario y la contraseña generada
+    // Enviar la respuesta con el usuario --- ELIMINAR password , esta puesto solo para PRUEBAS
     res.status(201).json({ user: savedUser, password });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -54,8 +54,56 @@ export const createUser = async (req, res) => {
 // Controlador para obtener todos los usuarios
 export const getUsers = async (req, res) => {
   try {
-    const users = await UserModel.find().populate('role');
-    res.status(200).json(users);
+    const page = parseInt(req.params.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const role = req.query.role;
+
+    const skip = (page - 1) * pageSize;
+    const limit = pageSize;
+
+    const query = {};
+
+    if (role) {
+      const roleData = await RoleModel.findOne({ name: role });
+      if (roleData) {
+        query.role = roleData._id;
+      } else {
+        return res.status(400).json({ message: 'El rol proporcionado no existe' });
+      }
+    }
+
+    const users = await UserModel.aggregate([
+      {
+        $lookup: {
+          from: 'roles',
+          localField: 'role',
+          foreignField: '_id',
+          as: 'role'
+        }
+      },
+      {
+        $unwind: '$role'
+      },
+      {
+        $match: query
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      }
+    ]);
+
+    const totalUsers = await UserModel.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
+    res.status(200).json({
+      users,
+      totalPages,
+      currentPage: page,
+      pageSize
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -99,7 +147,21 @@ export const getUserById = async (req, res) => {
 // Controlador para actualizar un usuario por su ID
 export const updateUserById = async (req, res) => {
   try {
-    const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { roleName, ...updateData } = req.body;
+
+    if (roleName) {
+      const role = await RoleModel.findOne({ name: roleName });
+      if (!role) {
+        return res.status(400).json({ message: 'El rol proporcionado no existe' });
+      }
+      updateData.role = role._id;
+      if (roleName === 'partner') {
+        updateData.phone_number = req.body.phone_number;
+        updateData.partner_number = req.body.partner_number;
+      }
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(req.params.id, updateData, { new: true }).populate('role');
     if (!updatedUser) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
@@ -119,6 +181,20 @@ export const deleteUserById = async (req, res) => {
     }
 
     res.status(200).json({ message: 'Usuario eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Controlador para obtener todos los socios con sus estudiantes
+export const getPartnersWithStudents = async (req, res) => {
+  try {
+    const role = await RoleModel.findOne({ name: 'partner' });
+    if (!role) {
+      return res.status(400).json({ message: 'El rol de socio no existe' });
+    }
+    const partners = await UserModel.find({ role: role._id }).populate('student_id');
+    res.status(200).json(partners);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
