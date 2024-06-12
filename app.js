@@ -35,17 +35,17 @@ app.use((req, res, next) => {
 app.use('/api/login', loginRoutes);
 
 // Rutas protegidas
-app.use('/api/users', authenticate, authorize(['admin']), userRoutes);
-app.use('/api/students', authenticate, authorize(['admin']), studentsRoutes);
-app.use('/api/categories', authenticate, authorize(['admin']), categoryRoutes);
-app.use('/api/centers', authenticate, authorize(['admin']), centerRoutes);
-app.use('/api/activities', authenticate, authorize(['admin']), activitiesRouter);
-app.use('/api/scheduleDays', authenticate, authorize(['admin']), scheduleDaysRouter);
-app.use('/api/scheduleHours', authenticate, authorize(['admin']), scheduleHoursRouter);
-app.use('/api/activitiesStudents', authenticate, authorize(['admin', 'monitor']), activitiesStudentsRouter);
-app.use('/api/breakfast', authenticate, authorize(['admin', 'coordinator']), breakfastRoutes);
-app.use('/api/attendance', authenticate, authorize(['admin']), attendanceRoutes);
-app.use('/api/roles', authenticate, authorize(['admin']), roleRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/students', studentsRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/centers', centerRoutes);
+app.use('/api/activities', activitiesRouter);
+app.use('/api/scheduleDays', scheduleDaysRouter);
+app.use('/api/scheduleHours', scheduleHoursRouter);
+app.use('/api/activitiesStudents', activitiesStudentsRouter);
+app.use('/api/breakfast', breakfastRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/roles', roleRoutes);
 
 function sendEmail({ recipient_email, OTP }) {
   return new Promise((resolve, reject) => {
