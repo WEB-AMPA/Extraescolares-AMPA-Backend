@@ -14,7 +14,7 @@ router.post('/registerAttendance', registerAttendance);
 
 
 // Ruta para obtener la asistencia de un estudiante para una actividad específica en un rango de fechas
-router.get('/attendance/student/:studentId/activity/:activityId/dateRange/:startDate/:endDate', getAttendanceByStudentAndActivity);
+router.get('/student/:studentId/activity/:activityId/dateRange/:startDate/:endDate', getAttendanceByStudentAndActivity);
 
 
 
@@ -23,15 +23,15 @@ router.get('/activitiesStudents/by-activity-and-date/:activity_id/:date', getStu
 
 
 // Ruta para obtener la asistencia por activities_student y rango de fechas
-router.get('/attendance/activities_student/:activities_student_id/date-range/:start_date/:end_date', getAttendanceByActivitiesStudentInDateRange);
+router.get('/activities_student/:activities_student_id/date-range/:start_date/:end_date', getAttendanceByActivitiesStudentInDateRange);
 
 
 // Ruta para obtener todas las asistencias
-router.get('/attendance', getAllAttendances);
+router.get('/', getAllAttendances);
 
 
 // Ruta para actualizar la asistencia
-router.put('/attendances/:attendance_id', updateAttendance);
+router.put('/:attendance_id', updateAttendance);
 
 
 export default router;
