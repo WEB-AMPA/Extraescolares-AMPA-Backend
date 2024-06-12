@@ -43,7 +43,7 @@ app.use("/api/activities", activitiesRouter);
 app.use("/api/scheduleDays", scheduleDaysRouter);
 app.use("/api/scheduleHours", scheduleHoursRouter);
 app.use("/api/activitiesStudents", activitiesStudentsRouter);
-app.use("/", breakfastRoutes);
+app.use("/api", breakfastRoutes);
 app.use("/api", attendanceRoutes);
 
 // Puerto en el que se ejecutará el servidor
