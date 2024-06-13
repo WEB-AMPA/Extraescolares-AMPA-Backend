@@ -114,7 +114,7 @@ export const getUsers = async (req, res) => {
 export const getUsersByRole = async (req, res) => {
   try {
     const { roleName } = req.params;
-    console.log(`Buscando usuarios con rol: ${roleName}`);
+    // console.log(`Buscando usuarios con rol: ${roleName}`);
 
     // Obtener el rol por su nombre
     const role = await RoleModel.findOne({ name: roleName });
@@ -124,7 +124,7 @@ export const getUsersByRole = async (req, res) => {
 
     // Obtener los usuarios con el rol especificado
     const users = await UserModel.find({ role: role._id }).populate('role');
-    console.log(`Usuarios encontrados: ${users.length}`);
+    // console.log(`Usuarios encontrados: ${users.length}`);
     res.status(200).json(users);
   } catch (error) {
     console.error('Error al obtener usuarios por rol:', error);
