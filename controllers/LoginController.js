@@ -23,6 +23,8 @@ export const loginUser = async (req, res) => {
 
     // Si no se encuentra al usuario, devolver un error
     if (!user) {
+      console.log (user)
+
       return res.status(401).json({ message: 'Credencial o contraseña incorrectos' });
     }
 
@@ -49,7 +51,7 @@ export const loginUser = async (req, res) => {
     const roleName = await RoleModel.findById(user.role);
 
     // Devolver el token como respuesta
-    res.status(200).json({ token, role: roleName.name });
+    res.status(200).json({ token, role: roleName.name, name:user.name });
   } catch (error) {
     res.status(500).json({ message: error.message });
     console.log(error);
