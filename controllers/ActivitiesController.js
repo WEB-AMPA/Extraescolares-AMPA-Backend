@@ -5,6 +5,8 @@ import ScheduleDay from '../models/ScheduleDaysModel.js';
 import ScheduleHour from '../models/ScheduleHoursModel.js';
 import StudentModel from '../models/StudentModels.js';
 import ActivitiesStudentsModel from '../models/ActivitiesStudentsModel.js';
+import UserModel from '../models/UsersModel.js'
+import mongoose from 'mongoose';
 
 class ActivitiesController {
   // Crear una nueva actividad
@@ -114,7 +116,12 @@ class ActivitiesController {
   // Actualizar una actividad por ID
   async updateActivity(req, res) {
     try {
-      const { name, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+      const { name, monitorUsername, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+
+      const monitor = await UserModel.findOne({ username: monitorUsername, role: 'monitor' });
+      if (!monitor) {
+        return res.status(400).json({ message: `El monitor proporcionado (${monitorUsername}) no existe.` });
+      }
 
       const centerIds = await Promise.all(centerNames.map(async (name) => {
         const center = await Center.findOne({ name: name });
@@ -152,6 +159,7 @@ class ActivitiesController {
         req.params.id,
         {
           name,
+          monitor: monitor._id,
           categories: categoryIds,
           scheduleDay: scheduleDayIds,
           scheduleHour: scheduleHourIds,
@@ -170,6 +178,38 @@ class ActivitiesController {
     }
   }
 
+
+  // Actualizar el monitor de una actividad por ID
+  async updateMonitorOfActivity(req, res) {
+    const activityId = req.params.id;
+    const { newMonitorUsername } = req.body;
+
+    try {
+      // Verificar si el newMonitorUsername es un ObjectId válido
+      if (!mongoose.isValidObjectId(newMonitorUsername)) {
+        return res.status(400).json({ message: `El ID del monitor proporcionado (${newMonitorUsername}) no es válido.` });
+      }
+
+      // Actualizar la actividad con el nuevo monitor
+      const updatedActivity = await ActivitiesModel.findByIdAndUpdate(
+        activityId,
+        { monitor: newMonitorUsername },
+        { new: true }
+      ).populate('monitor');
+
+      if (!updatedActivity) {
+        return res.status(404).json({ message: 'Actividad no encontrada.' });
+      }
+
+      res.status(200).json(updatedActivity);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al actualizar el monitor de la actividad.' });
+    }
+  }
+
+  
+  
   // Eliminar una actividad por ID
   async deleteActivity(req, res) {
     try {

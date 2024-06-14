@@ -139,6 +139,22 @@ class StudentsController {
       res.status(500).json({ message: 'Hubo un error al obtener los estudiantes con desayuno.', error: error.message });
     }
   }
+
+
+//ruta para obtener estudiantes asociados al padre
+async getStudentsByPartnerId(req, res) {
+  try {
+    const { partnerId } = req.params;
+    const students = await StudentModel.find({ partner: partnerId }).populate('center partner');
+    if (!students) {
+      return res.status(404).json({ message: 'No se encontraron estudiantes para el socio proporcionado.' });
+    }
+    res.status(200).json(students);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al obtener los estudiantes.', error: error.message });
+  }
+}
 }
 
 export default new StudentsController();

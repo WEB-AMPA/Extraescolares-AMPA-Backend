@@ -23,9 +23,11 @@ export const sendEmailClient = (host_email, server_port, server_email, pass_serv
     from: "Extraescolares Ciudad de los Angeles <cdangeles.extraescolares@gmail.com>", // sender address
     to: user_email, // list of receivers
     subject: 'Password for Web', // Subject line
-    text: password_generated, // plain text body
-    html: `<b>${password_generated}</b>` // html body
+    text: `Puedes iniciar sesión con tu correo electrónico y la siguiente contraseña: ${password_generated}`, // plain text body
+    html: `<p>Puedes iniciar sesión con tu correo electrónico y la siguiente contraseña: <b>${password_generated}</b></p>` // html body
   };
+
+  
   // send mail with defined transport object
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
