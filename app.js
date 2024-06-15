@@ -22,15 +22,14 @@ const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://ciudadangelescd.netlify.app'], // Permitir ambas URLs
+  credentials: true
+}));
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  next();
-});
 
 // Rutas no protegidas
-app.use('/api/auth', loginRoutes);
+app.use('/api/login', loginRoutes);
 
 // Rutas protegidas
 app.use('/api/users', userRoutes);
