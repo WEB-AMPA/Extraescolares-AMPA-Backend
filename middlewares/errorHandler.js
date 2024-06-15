@@ -1,10 +1,3 @@
-// const errorHandler = (err, req, res, next) => {
-//     console.error(err.stack);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   };
-  
-//   export default errorHandler;
-
 import winston from 'winston';
 
 const logger = winston.createLogger({
