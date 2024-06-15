@@ -223,67 +223,47 @@ class ActivitiesController {
       res.status(500).json({ message: 'Hubo un error al eliminar la actividad.' });
     }
   }
-
-  // Asignar una actividad a un estudiante
   async assignActivityToStudent(req, res) {
     try {
-      const { activityId, studentId, categoryName, scheduleDay, scheduleHour, centerName } = req.body;
-
+      const { activityId, studentId } = req.body;
+  
       const activityFound = await ActivitiesModel.findById(activityId);
       if (!activityFound) {
         return res.status(400).json({ message: 'La actividad proporcionada no existe.' });
       }
-
+  
       const studentFound = await StudentModel.findById(studentId);
       if (!studentFound) {
         return res.status(400).json({ message: 'El estudiante proporcionado no existe.' });
       }
-
-      const categoryFound = await Category.findOne({ name: categoryName });
-      if (!categoryFound) {
-        return res.status(400).json({ message: 'La categoría proporcionada no existe.' });
-      }
-
-      const scheduleDayFound = await ScheduleDay.findOne({ days: scheduleDay });
-      if (!scheduleDayFound) {
-        return res.status(400).json({ message: `El día proporcionado (${scheduleDay}) no existe.` });
-      }
-
-      const scheduleHourFound = await ScheduleHour.findOne({ range: scheduleHour });
-      if (!scheduleHourFound) {
-        return res.status(400).json({ message: `La hora proporcionada (${scheduleHour}) no existe.` });
-      }
-
-      const centerFound = await Center.findOne({ name: centerName });
-      if (!centerFound) {
-        return res.status(400).json({ message: 'El centro proporcionado no existe.' });
-      }
-
-      // Si el estudiante no tiene centro o curso asignados, asignarlos
+  
+      const { categories, scheduleDay, scheduleHour, centers } = activityFound;
+  
+      // Asignar centro si no está asignado
       if (!studentFound.center) {
-        studentFound.center = centerFound._id;
+        studentFound.center = centers[0]; // Usar el primer centro de la actividad
       }
       if (!studentFound.course) {
-        studentFound.course = 'Curso no especificado'; // Puedes ajustar el valor predeterminado según sea necesario
+        studentFound.course = 'Curso no especificado';
       }
-
+  
       studentFound.activities.push({
         activity: activityFound._id,
-        category: categoryFound._id,
-        scheduleDay: scheduleDayFound._id,
-        scheduleHour: scheduleHourFound._id,
-        center: centerFound._id
+        category: categories[0], // Usar la primera categoría de la actividad
+        scheduleDay: scheduleDay[0], // Usar el primer día de la actividad
+        scheduleHour: scheduleHour[0], // Usar la primera hora de la actividad
+        center: centers[0] // Usar el primer centro de la actividad
       });
-
+  
       await studentFound.save();
-
+  
       const newAssignment = new ActivitiesStudentsModel({
         student: studentFound._id,
         activity: activityFound._id,
       });
-
+  
       await newAssignment.save();
-
+  
       res.status(200).json({ message: 'Actividad asignada exitosamente al estudiante.' });
     } catch (error) {
       console.error(error);
