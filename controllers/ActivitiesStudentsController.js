@@ -6,16 +6,27 @@ class ActivitiesStudentsController {
   // Obtener todas las asignaciones de actividades a estudiantes
   async getAllAssignments(req, res) {
     try {
-      const assignments = await ActivitiesStudentsModel.find()
-        .populate('student')
-        .populate('activity');
+      const { studentId } = req.query;
+      const query = studentId ? { student: studentId } : {};
+      const assignments = await ActivitiesStudentsModel.find(query)
+        .populate('student', ['name', 'lastname', 'breakfast', 'observations', 'course', 'partner', 'center', 'activities'])
+        .populate({
+          path: 'activity',
+          populate: [
+            { path: 'monitor', model: 'users' },
+            { path: 'categories', model: 'categories' },
+            { path: 'scheduleDay', model: 'schedule_days' },
+            { path: 'scheduleHour', model: 'schedule_hours' },
+            { path: 'centers', model: 'centers' }
+          ]
+        });
       res.status(200).json(assignments);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Hubo un error al obtener las asignaciones." });
     }
   }
-
+  
   // Obtener una asignación por ID
   async getAssignmentById(req, res) {
     try {
