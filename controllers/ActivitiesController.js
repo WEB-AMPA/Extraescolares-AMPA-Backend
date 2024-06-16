@@ -6,15 +6,23 @@ import ScheduleHour from '../models/ScheduleHoursModel.js';
 import StudentModel from '../models/StudentModels.js';
 import ActivitiesStudentsModel from '../models/ActivitiesStudentsModel.js';
 import UserModel from '../models/UsersModel.js'
+import Role from '../models/RoleModel.js';
 import mongoose from 'mongoose';
 
 class ActivitiesController {
   // Crear una nueva actividad
   async createActivity(req, res) {
     try {
-      const { name, monitorUsername, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+      const { name, monitorUsername, categoryNames = [], scheduleDays = [], scheduleHours = [], centerNames = [] } = req.body;
 
-      const monitor = await UserModel.findOne({ username: monitorUsername, role: 'monitor' });
+      // Buscar el rol 'monitor'
+      const monitorRole = await Role.findOne({ name: 'monitor' });
+      if (!monitorRole) {
+        return res.status(400).json({ message: 'El rol "monitor" no existe.' });
+      }
+
+      // Buscar al monitor por su username y role 'monitor'
+      const monitor = await UserModel.findOne({ username: monitorUsername, role: monitorRole._id });
       if (!monitor) {
         return res.status(400).json({ message: `El monitor proporcionado (${monitorUsername}) no existe.` });
       }
@@ -53,7 +61,7 @@ class ActivitiesController {
 
       const newActivity = new ActivitiesModel({
         name,
-        monitor: monitor._id,
+        monitor: monitor._id, // Utilizamos el _id del monitor encontrado
         categories: categoryIds,
         scheduleDay: scheduleDayIds,
         scheduleHour: scheduleHourIds,
@@ -77,6 +85,8 @@ class ActivitiesController {
       });
     }
   }
+
+
 
   // Obtener todas las actividades
   async getAllActivities(req, res) {
@@ -113,16 +123,30 @@ class ActivitiesController {
     }
   }
 
-  // Actualizar una actividad por ID
-  async updateActivity(req, res) {
-    try {
-      const { name, monitorUsername, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+ // Actualizar una actividad por ID
 
-      const monitor = await UserModel.findOne({ username: monitorUsername, role: 'monitor' });
-      if (!monitor) {
-        return res.status(400).json({ message: `El monitor proporcionado (${monitorUsername}) no existe.` });
+async updateActivity(req, res) {
+  try {
+    const { name, monitorUsername, categoryNames, scheduleDays, scheduleHours, centerNames } = req.body;
+
+    const updateData = {};
+
+    if (name) updateData.name = name;
+
+    if (monitorUsername) {
+      // Verificar si monitorUsername es un ObjectId válido
+      if (mongoose.isValidObjectId(monitorUsername)) {
+        updateData.monitor = monitorUsername; // Utilizar el ObjectId directamente
+      } else {
+        const monitor = await UserModel.findOne({ username: monitorUsername, role: 'monitor' });
+        if (!monitor) {
+          return res.status(400).json({ message: `El monitor proporcionado (${monitorUsername}) no existe.` });
+        }
+        updateData.monitor = monitor._id; // Asignar el ObjectId del monitor encontrado
       }
+    }
 
+    if (centerNames) {
       const centerIds = await Promise.all(centerNames.map(async (name) => {
         const center = await Center.findOne({ name: name });
         if (!center) {
@@ -130,7 +154,10 @@ class ActivitiesController {
         }
         return center._id;
       }));
+      updateData.centers = centerIds;
+    }
 
+    if (categoryNames) {
       const categoryIds = await Promise.all(categoryNames.map(async (name) => {
         const category = await Category.findOne({ name: name });
         if (!category) {
@@ -138,7 +165,10 @@ class ActivitiesController {
         }
         return category._id;
       }));
+      updateData.categories = categoryIds;
+    }
 
+    if (scheduleDays) {
       const scheduleDayIds = await Promise.all(scheduleDays.map(async (day) => {
         const foundDay = await ScheduleDay.findOne({ days: day });
         if (!foundDay) {
@@ -146,7 +176,10 @@ class ActivitiesController {
         }
         return foundDay._id;
       }));
+      updateData.scheduleDay = scheduleDayIds;
+    }
 
+    if (scheduleHours) {
       const scheduleHourIds = await Promise.all(scheduleHours.map(async (hour) => {
         const foundHour = await ScheduleHour.findOne({ range: hour });
         if (!foundHour) {
@@ -154,29 +187,25 @@ class ActivitiesController {
         }
         return foundHour._id;
       }));
-
-      const updatedActivity = await ActivitiesModel.findByIdAndUpdate(
-        req.params.id,
-        {
-          name,
-          monitor: monitor._id,
-          categories: categoryIds,
-          scheduleDay: scheduleDayIds,
-          scheduleHour: scheduleHourIds,
-          centers: centerIds,
-        },
-        { new: true }
-      ).populate('categories').populate('scheduleDay').populate('scheduleHour').populate('centers').populate('monitor');
-
-      if (!updatedActivity) {
-        return res.status(404).json({ message: 'Actividad no encontrada.' });
-      }
-      res.status(200).json(updatedActivity);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Hubo un error al actualizar la actividad.' });
+      updateData.scheduleHour = scheduleHourIds;
     }
+
+    const updatedActivity = await ActivitiesModel.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    ).populate('categories').populate('scheduleDay').populate('scheduleHour').populate('centers').populate('monitor');
+
+    if (!updatedActivity) {
+      return res.status(404).json({ message: 'Actividad no encontrada.' });
+    }
+
+    res.status(200).json(updatedActivity);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Hubo un error al actualizar la actividad.', error: error.message });
   }
+}
 
 
   // Actualizar el monitor de una actividad por ID
