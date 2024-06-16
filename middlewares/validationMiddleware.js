@@ -7,15 +7,22 @@ const userSchema = Joi.object({
   roleName: Joi.string().required(),
   lastname: Joi.string().required(),
   name: Joi.string().required(),
-  phone_number: Joi.string().when('roleName', {
+  phone_number: Joi.string().allow(null, '').when('roleName', {
     is: 'partner',
-    then: Joi.required(),
-    otherwise: Joi.optional()
+    then: Joi.string().required().messages({
+      'any.required': 'El número de teléfono es obligatorio para los socios',
+      'string.empty': 'El número de teléfono no puede estar vacío'
+    }),
+    otherwise: Joi.string().optional()
   }),
-  partner_number: Joi.number().when('roleName', {
+  partner_number: Joi.number().allow(null, '').when('roleName', {
     is: 'partner',
-    then: Joi.required(),
-    otherwise: Joi.optional()
+    then: Joi.number().required().messages({
+      'any.required': 'El número de socio es obligatorio para los socios',
+      'number.base': 'El número de socio debe ser un número',
+      'number.empty': 'El número de socio no puede estar vacío'
+    }),
+    otherwise: Joi.number().optional()
   })
 });
 
