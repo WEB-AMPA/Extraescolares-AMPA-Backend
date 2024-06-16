@@ -33,7 +33,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Controlador para solicitar el restablecimiento de contraseña
 export const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
 
@@ -68,7 +67,6 @@ export const requestPasswordReset = async (req, res) => {
   }
 };
 
-// Controlador para restablecer la contraseña
 export const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 

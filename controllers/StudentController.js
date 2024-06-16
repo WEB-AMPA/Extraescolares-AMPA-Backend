@@ -7,33 +7,29 @@ class StudentsController {
     try {
       const { name, lastname, breakfast, observations, course, partner_number, centerName } = req.body;
 
-      // Buscar el centro por su nombre
       const center = await Center.findOne({ name: centerName });
       if (!center) {
         return res.status(400).json({ message: 'El centro proporcionado no existe.' });
       }
 
-      // Buscar el socio en la colección de usuarios por su número de socio
       const partner = await UserModel.findOne({ partner_number });
       if (!partner) {
         return res.status(400).json({ message: 'El socio proporcionado no existe.' });
       }
 
-      // Crear el nuevo estudiante
       const newStudent = new StudentModel({
         name,
         lastname,
         breakfast,
         observations,
         course,
-        partner: partner._id, // Guarda el ObjectId del socio en el estudiante
-        center: center._id // Asignar el ObjectId del centro
+        partner: partner._id,
+        center: center._id
       });
 
       const savedStudent = await newStudent.save();
 
-      // Agregar el estudiante al socio correspondiente
-      if (!partner.students) {
+      if (!Array.isArray(partner.students)) {
         partner.students = [];
       }
       partner.students.push(savedStudent._id);
@@ -73,13 +69,11 @@ class StudentsController {
     try {
       const { name, lastname, breakfast, observations, course, partner_number, centerName } = req.body;
 
-      // Buscar el centro por su nombre
       const center = await Center.findOne({ name: centerName });
       if (!center) {
         return res.status(400).json({ message: 'El centro proporcionado no existe.' });
       }
 
-      // Buscar el socio en la colección de usuarios por su número de socio
       const partner = await UserModel.findOne({ partner_number });
       if (!partner) {
         return res.status(400).json({ message: 'El socio proporcionado no existe.' });
@@ -95,8 +89,12 @@ class StudentsController {
         return res.status(404).json({ message: 'Estudiante no encontrado.' });
       }
 
-      // Actualizar la lista de estudiantes del socio
-      if (!partner.students.includes(updatedStudent._id)) {
+      if (!Array.isArray(partner.students)) {
+        partner.students = [];
+      }
+
+      const studentIdStr = updatedStudent._id.toString();
+      if (!partner.students.some(id => id.toString() === studentIdStr)) {
         partner.students.push(updatedStudent._id);
         await partner.save();
       }
@@ -115,10 +113,12 @@ class StudentsController {
         return res.status(404).json({ message: 'Estudiante no encontrado.' });
       }
 
-      // Eliminar el estudiante de la lista de estudiantes del socio
-      const partner = await UserModel.findOne({ partner_number: deletedStudent.partner_number });
+      const partner = await UserModel.findById(deletedStudent.partner);
       if (partner) {
-        partner.students.pull(deletedStudent._id);
+        if (!Array.isArray(partner.students)) {
+          partner.students = [];
+        }
+        partner.students = partner.students.filter(id => id.toString() !== deletedStudent._id.toString());
         await partner.save();
       }
 
@@ -129,7 +129,6 @@ class StudentsController {
     }
   }
 
-  // Obtener todos los estudiantes que tienen el desayuno habilitado
   async getStudentsWithBreakfast(req, res) {
     try {
       const students = await StudentModel.find({ breakfast: true });
@@ -140,22 +139,19 @@ class StudentsController {
     }
   }
 
-
-//ruta para obtener estudiantes asociados al padre
-async getStudentsByPartnerId(req, res) {
-  try {
-    const { partnerId } = req.params;
-    const students = await StudentModel.find({ partner: partnerId }).populate('center partner');
-    if (!students) {
-      return res.status(404).json({ message: 'No se encontraron estudiantes para el socio proporcionado.' });
+  async getStudentsByPartnerId(req, res) {
+    try {
+      const { partnerId } = req.params;
+      const students = await StudentModel.find({ partner: partnerId }).populate('center partner');
+      if (!students || students.length === 0) {
+        return res.status(404).json({ message: 'No se encontraron estudiantes para el socio proporcionado.' });
+      }
+      res.status(200).json(students);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un error al obtener los estudiantes.', error: error.message });
     }
-    res.status(200).json(students);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Hubo un error al obtener los estudiantes.', error: error.message });
   }
-}
 }
 
 export default new StudentsController();
-
