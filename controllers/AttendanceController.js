@@ -1,5 +1,7 @@
 import AttendanceModel from '../models/AttendanceModel.js';
 import ActivitiesStudentsModel from '../models/ActivitiesStudentsModel.js';
+import StudentController from './StudentController.js';
+import StudentModel from '../models/StudentModels.js';
 
 
 // Controlador para registrar la asistencia a una actividad
@@ -65,18 +67,22 @@ export const getAttendanceByActivitiesStudentInDateRange = async (req, res) => {
 
     // Verificar que el ID de activities_student es válido
     const activityStudent = await ActivitiesStudentsModel.findById(activities_student_id).lean();
-
     if (!activityStudent) {
       return res.status(404).json({ message: 'No se encontró la actividad para el estudiante especificado.' });
     }
+
+    const getStudent = await StudentModel.findById(activityStudent.student)
+    // console.log("Student",getStudent.name)
 
     // Consultar la asistencia del estudiante en el rango de fechas especificado
     const attendances = await AttendanceModel.find({
       activities_student: activities_student_id, // Usar el ID de activities_student
       date: { $gte: startDate, $lte: endDate }
-    }).populate('activities_student');
+    }).populate('activities_student')
 
-    res.status(200).json(attendances);
+  const newObj ={attendances,studentName:`${getStudent.name}, ${getStudent.lastname}` };
+
+    res.status(200).json(newObj);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Hubo un error al obtener las asistencias.' });
