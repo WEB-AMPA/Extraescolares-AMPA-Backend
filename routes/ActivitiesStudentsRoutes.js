@@ -11,4 +11,5 @@ router.post('/', authenticate, authorize(['admin']), activitiesStudentsControlle
 router.put('/:id', authenticate, authorize(['admin']), activitiesStudentsController.updateAssignment);
 router.delete('/:id', authenticate, authorize(['admin']), activitiesStudentsController.deleteAssignment);
 
+
 export default router;

@@ -1,6 +1,6 @@
 # Backend Grupo Actividades ExtrasEscolares
 
-Proyecto innovador del *Grupo Actividades ExtrasEscolares*, enfocado en realizar un backend donde guardar actividades, usuarios, gestionar usuarios nuevos.
+Proyecto innovador del *Grupo Actividades ExtrasEscolares*, enfocado en realizar un backend donde guardar actividades, usuarios, gestionar usuarios nuevos, asistencias a diferentes actividades y desayunos.
 
 ## Tabla de Contenidos
 
@@ -16,8 +16,9 @@ El proyecto se encuentra en estado de producción con posibles cambios de mejora
 💻
 
 Al instalarse el proyecto en la consola se deben tener en cuenta las siguientes indicaciones: <br>
+- Se debe instalar pnpm en el ordenador de manera global: npm install -g pnpm
 - Se debe instalar Node.js en el ordenador: pnpm install
-- Dentro de la carpeta debemos escribir en la terminal: nodemon app.js
+- Dentro de la carpeta debemos escribir en la terminal: nodemon app.js o pnpm run dev
 
 
 ## Créditos

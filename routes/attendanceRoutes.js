@@ -9,20 +9,10 @@ import {
 
 const router = express.Router();
 
-// Ruta para registrar la asistencia a una actividad
 router.post('/registerAttendance', registerAttendance);
-
-
-// Ruta para obtener la asistencia de un estudiante para una actividad específica en un rango de fechas
 router.get('/student/:studentId/activity/:activityId/dateRange/:startDate/:endDate', getAttendanceByStudentAndActivity);
-
-
-
-// Ruta para obtener para obtener estudiantes y su asistencia por actividad y fecha
 router.get('/activitiesStudents/by-activity-and-date/:activity_id/:date', getStudentsAndAttendanceByActivityAndDate);
 
-
-// Ruta para obtener la asistencia por activities_student y rango de fechas
 router.get('/activities_student/:activities_student_id/date-range/:start_date/:end_date', getAttendanceByActivitiesStudentInDateRange);
 
 
