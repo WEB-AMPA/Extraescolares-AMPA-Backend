@@ -14,18 +14,6 @@ router.post('/assign', authenticate, authorize(['admin']), activitiesController.
 router.put('/:id/update-monitor', authenticate, authorize(['admin']), activitiesController.updateMonitorOfActivity);
 
 
-
-
-// router.post('/', activitiesController.createActivity);
-// router.get('/',  activitiesController.getAllActivities);
-// router.get('/:id',  activitiesController.getActivityById);
-// router.put('/:id', activitiesController.updateActivity);
-// router.delete('/:id',  activitiesController.deleteActivity);
-// router.post('/assign', activitiesController.assignActivityToStudent);
-// router.put('/:id/update-monitor', activitiesController.updateMonitorOfActivity);
-
-
-
 export default router;
 
 

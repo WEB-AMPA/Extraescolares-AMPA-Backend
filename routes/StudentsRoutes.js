@@ -13,14 +13,5 @@ router.delete('/:id', authenticate, authorize(['admin']), studentsController.del
 router.get('/partner/:partnerId', authenticate, authorize(['admin']), studentsController.getStudentsByPartnerId);
 
 
-// router.post('/',  studentsController.createStudent);
-// router.get('/withbreakfast', studentsController.getStudentsWithBreakfast);
-// router.get('/:id', studentsController.getStudentById);
-// router.get('/', studentsController.getAllStudents);
-// router.put('/:id', studentsController.updateStudent);
-// router.delete('/:id', studentsController.deleteStudent);
-
-// // Ruta para obtener estudiantes por partner ID
-// router.get('/partner/:partnerId', studentsController.getStudentsByPartnerId);
 
 export default router;
