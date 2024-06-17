@@ -27,7 +27,7 @@ export const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token, role: user.role.name, name: user.name });
+    res.status(200).json({ token, role: user.role.name, name: user.name, partnerId: user._id });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
