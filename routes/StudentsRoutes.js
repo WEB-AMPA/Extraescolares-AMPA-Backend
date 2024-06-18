@@ -10,17 +10,6 @@ router.get('/withbreakfast', authenticate, authorize(['admin', 'coordinator']), 
 router.get('/:id', authenticate, authorize(['admin']), studentsController.getStudentById);
 router.put('/:id', authenticate, authorize(['admin']), studentsController.updateStudent);
 router.delete('/:id', authenticate, authorize(['admin']), studentsController.deleteStudent);
-router.get('/partner/:partnerId', authenticate, authorize(['admin']), studentsController.getStudentsByPartnerId);
-
-
-// router.post('/',  studentsController.createStudent);
-// router.get('/withbreakfast', studentsController.getStudentsWithBreakfast);
-// router.get('/:id', studentsController.getStudentById);
-// router.get('/', studentsController.getAllStudents);
-// router.put('/:id', studentsController.updateStudent);
-// router.delete('/:id', studentsController.deleteStudent);
-
-// // Ruta para obtener estudiantes por partner ID
-// router.get('/partner/:partnerId', studentsController.getStudentsByPartnerId);
+router.get('/partner/:partnerId', authenticate, authorize(['admin','partner']), studentsController.getStudentsByPartnerId);
 
 export default router;
