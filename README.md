@@ -1,6 +1,8 @@
 # Backend Grupo Actividades ExtrasEscolares
 
-Proyecto innovador del *Grupo Actividades ExtrasEscolares*, enfocado en realizar un backend donde guardar actividades, usuarios, gestionar usuarios nuevos, asistencias a diferentes actividades y desayunos.
+Proyecto innovador del *Grupo Actividades ExtrasEscolares*, enfocado en realizar un para poder gestionar usuarios, actividades y asistencias a diferentes actividades.
+
+La idea es poder ofrecer una solución digital y cómoda para poder realizar diferentes tareas administrativas para el Club Deportivo.
 
 ## Tabla de Contenidos
 
@@ -45,17 +47,12 @@ Al instalarse el proyecto en la consola se deben tener en cuenta las siguientes 
 ![Vite](https://img.shields.io/badge/Vite-15-%20brown)
 
 
-## Metodologías Ágiles
+## Link del Deploy del Backend
 
-- <a href="#">Deploy</a>
+- <a href="https://extraescolares-backend.onrender.com">Deploy</a>
 
 ## Licencia
 
 Este proyecto está bajo la Licencia [CCO](LICENSE).
 
 Las fuentes utilizadas en este proyecto estan sujetas a licencia SIL con Copyright &copy; 2014, Indian Type Foundry (info@indiantypefoundry.com)
-
-## Test 
-
-Se han hecho varios test para el backend para el controlador 
-![imagen del test de backend]()
