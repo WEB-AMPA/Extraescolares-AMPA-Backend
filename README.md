@@ -1,8 +1,8 @@
-# Backend Grupo Actividades ExtrasEscolares
+# Backend Grupo Actividades Extraescolares
 
-Proyecto innovador del *Grupo Actividades ExtrasEscolares*, enfocado en realizar un para poder gestionar usuarios, actividades y asistencias a diferentes actividades.
+El *Grupo Actividades Extraescolares* presenta un proyecto innovador enfocado en desarrollar una plataforma backend para la gestión de usuarios, actividades y asistencias en diversas actividades.
 
-La idea es poder ofrecer una solución digital y cómoda para poder realizar diferentes tareas administrativas para el Club Deportivo.
+Este proyecto tiene como objetivo ofrecer una solución digital eficiente y conveniente para la realización de tareas administrativas en el Club Deportivo Ciudad de los Ángeles.
 
 ## Tabla de Contenidos
 
@@ -14,8 +14,8 @@ La idea es poder ofrecer una solución digital y cómoda para poder realizar dif
 ## Estado del Proyecto
 El proyecto se encuentra en estado de producción con posibles cambios de mejoras y actualizaciones.
 
-## Instalación
-💻
+## Instalación 💻
+
 
 Al instalarse el proyecto en la consola se deben tener en cuenta las siguientes indicaciones: <br>
 - Se debe instalar pnpm en el ordenador de manera global: npm install -g pnpm
