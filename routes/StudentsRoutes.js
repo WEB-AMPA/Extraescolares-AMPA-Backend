@@ -10,8 +10,6 @@ router.get('/withbreakfast', authenticate, authorize(['admin', 'coordinator']), 
 router.get('/:id', authenticate, authorize(['admin']), studentsController.getStudentById);
 router.put('/:id', authenticate, authorize(['admin']), studentsController.updateStudent);
 router.delete('/:id', authenticate, authorize(['admin']), studentsController.deleteStudent);
-router.get('/partner/:partnerId', authenticate, authorize(['admin']), studentsController.getStudentsByPartnerId);
-
-
+router.get('/partner/:partnerId', authenticate, authorize(['admin','partner']), studentsController.getStudentsByPartnerId);
 
 export default router;

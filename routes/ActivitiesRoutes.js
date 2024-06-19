@@ -14,6 +14,7 @@ router.post('/assign', authenticate, authorize(['admin']), activitiesController.
 router.put('/:id/update-monitor', authenticate, authorize(['admin']), activitiesController.updateMonitorOfActivity);
 
 
+
 export default router;
 
 
