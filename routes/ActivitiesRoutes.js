@@ -6,8 +6,8 @@ import { authenticate, authorize } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.post('/', authenticate, authorize(['admin']), activitiesController.createActivity);
-router.get('/', authenticate, authorize(['admin']), activitiesController.getAllActivities);
-router.get('/:id', authenticate, authorize(['admin']), activitiesController.getActivityById);
+router.get('/', authenticate, authorize(['admin', 'monitor']), activitiesController.getAllActivities);
+router.get('/:id', authenticate, authorize(['admin', 'monitor']), activitiesController.getActivityById);
 router.put('/:id', authenticate, authorize(['admin']), activitiesController.updateActivity);
 router.delete('/:id', authenticate, authorize(['admin']), activitiesController.deleteActivity);
 router.post('/assign', authenticate, authorize(['admin']), activitiesController.assignActivityToStudent);
